@@ -13,9 +13,6 @@ app.get('/hello', async function(req,res){
     res.type("text").send("Hello");
 });
 
-
-
-
 app.use(express.static('public'));
 const PORT = process.env.PORT || LOCAL_PORT;
 app.listen(PORT);
