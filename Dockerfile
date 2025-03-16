@@ -7,14 +7,17 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
-
 # Copy app source code
 COPY . .
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 3001
+
+WORKDIR /usr/src/app/piefest_backend
+
+RUN npm install
+
+RUN npm run build
 
 # Command to run the application
-CMD [ "node", "app.js" ]
+CMD [ "npm", "start" ]
