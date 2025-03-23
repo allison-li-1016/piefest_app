@@ -32,6 +32,7 @@ function Home() {
                 <li>11:00 AM - Pie Tasting</li>
                 <li>1:00 PM - Pie Eating Contest</li>
                 <li>3:00 PM - Award Ceremony</li>
+                <li>11:00 PM - After Party @ Ben's Mom's House</li>
             </ul>
         </section>
     </main>
