@@ -16,7 +16,7 @@ async function BakePie(pieId, name) {
         }
 
         await ConnectAndQuery(BakePieQuery, new Map([
-            ['userID', userId],
+            ['userID', pieId],
             ['name', name]
         ]));
 
