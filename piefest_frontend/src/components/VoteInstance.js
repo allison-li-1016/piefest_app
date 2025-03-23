@@ -103,7 +103,26 @@ function VoteInstance() {
 	};
 
 	// Render the pie cards
+	const [showAnimation, setShowAnimation] = useState(false);
+
+	// Handle submit function
+	const handleSubmitWithAnimation = async () => {
+		setShowAnimation(true);
+		try {
+			await updatePieRatings(pies, ratings);
+			setTimeout(() => {
+				alert('Ratings submitted successfully!');
+				setShowAnimation(false);
+			}, 2000);
+		} catch (error) {
+			console.error("Error submitting ratings:", error);
+			alert('Failed to submit ratings.');
+			setShowAnimation(false);
+		}
+	};
+
 	return (
+		<div>
 		<Container maxWidth="lg" sx={{ py: 2 }}>
 			{/* Sticky header */}
 			<Box sx={{ 
@@ -124,22 +143,61 @@ function VoteInstance() {
 					</Typography>
 				</Box>
 				
-				<Button 
-					variant="contained" 
-					color="success"
-					onClick={handleSubmit}
-					sx={{ 
-						py: 1, 
-						px: 2,
-						fontWeight: 'bold',
-						boxShadow: 3,
-						'&:hover': {
-							boxShadow: 6,
-						}
-					}}
-				>
-					SUBMIT RATINGS
-				</Button>
+				<Box sx={{ position: 'relative' }}>
+					<Button 
+						variant="contained" 
+						color="success"
+						onClick={handleSubmitWithAnimation}
+						sx={{ 
+							py: 1, 
+							px: 2,
+							fontWeight: 'bold',
+							boxShadow: 3,
+							'&:hover': {
+								boxShadow: 6,
+							}
+						}}
+					>
+						SUBMIT RATINGS
+					</Button>
+					{showAnimation && (
+						<>
+							{
+							[...Array(6)].map((_, i) => {
+								// Generate angle between 180 (left) and 270 (down) degrees
+								const angle = 90 + Math.random() * 90;
+								return (
+									<Box
+										key={i}
+										component="span"
+										sx={{
+											position: 'absolute',
+											top: '50%',
+											left: '50%',
+											fontSize: '3rem',
+											animation: `pieConfetti${i} 1.5s ease-out forwards`,
+											opacity: 0,
+											pointerEvents: 'none',
+											zIndex: 100,
+											[`@keyframes pieConfetti${i}`]: {
+												'0%': {
+													transform: 'translate(-50%, -50%) rotate(0deg) scale(1.5)',
+													opacity: 1
+												},
+												'100%': {
+													transform: `translate(${Math.cos(angle * Math.PI/180) * 300}px, ${Math.sin(angle * Math.PI/180) * 300}px) rotate(${Math.random() * 720 - 360}deg) scale(0.2)`,
+													opacity: 0
+												}
+											}
+										}}
+									>
+										🥧
+									</Box>
+								);
+							})}
+						</>
+					)}
+				</Box>
 			</Box>
 			
 			<Divider sx={{ mt: 1, mb: 2 }} />
@@ -192,6 +250,7 @@ function VoteInstance() {
 				</Paper>
 			)}
 		</Container>
+		</div>
 	);
 }
 
