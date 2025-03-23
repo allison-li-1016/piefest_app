@@ -39,11 +39,16 @@ CREATE TABLE Votes (
     FOREIGN Key (PieID) REFERENCES Pies(PieID)
 );
 `
+const GetAllPiesQuery = 
+`
+SELECT * FROM Pies;
+`
 
 module.exports = {
     CreateUserTableQuery,
     CreateAdminTableQuery,
     CreatePieTableQuery,
     CreateVotesTableQuery,
-    CheckAdminCredentialsQuery
+    CheckAdminCredentialsQuery,
+    GetAllPiesQuery
 }
