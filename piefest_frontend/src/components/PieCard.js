@@ -1,6 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { getPie } from './Helpers/Helpers';
-// import './PieCard.css';
+import { 
+    Box, 
+    CardMedia, 
+    CardContent, 
+    Typography, 
+    Skeleton, 
+    Divider
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+// Styled components to match Rankings.js styling
+const CardContentStyled = styled(CardContent)(({ theme }) => ({
+    padding: theme.spacing(2),
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+}));
+
+const PieImage = styled(CardMedia)(({ theme }) => ({
+    height: 160,
+    transition: 'transform 0.5s ease',
+    '&:hover': {
+        transform: 'scale(1.05)',
+    },
+}));
 
 const PieCard = ({ uid }) => {
     const [pie, setPie] = useState({
@@ -15,9 +40,7 @@ const PieCard = ({ uid }) => {
         const fetchPieData = async () => {
             try {
                 setLoading(true);
-                // Replace with your actual API endpoint
                 const response = await getPie(uid);
-                // Check if response has data property or is the data itself
                 setPie(response.data || response);
                 setError(null);
             } catch (err) {
@@ -33,21 +56,63 @@ const PieCard = ({ uid }) => {
         }
     }, [uid]);
 
-    if (loading) return <div className="pie-card loading">Loading...</div>;
-    if (error) return <div className="pie-card error">{error}</div>;
+    if (loading) return (
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Skeleton variant="rectangular" height={160} animation="wave" />
+            <CardContentStyled>
+                <Skeleton variant="text" height={30} width="70%" sx={{ mb: 1 }} />
+                <Skeleton variant="text" width="90%" />
+                <Skeleton variant="text" width="60%" />
+            </CardContentStyled>
+        </Box>
+    );
+    
+    if (error) return (
+        <Box sx={{ height: '100%', bgcolor: '#ffebee', p: 2 }}>
+            <Typography color="error" variant="body1" sx={{ fontWeight: 'medium' }}>
+                {error}
+            </Typography>
+        </Box>
+    );
 
     return (
-        <div className="pie-card">
-            {pie.image && (
-                <div className="pie-image">
-                    <img src={pie.image} alt={pie.name} />
-                </div>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            {pie.image ? (
+                <PieImage
+                    component="img"
+                    image={pie.image}
+                    alt={pie.name}
+                />
+            ) : (
+                <Box 
+                    sx={{ 
+                        height: 160, 
+                        bgcolor: 'grey.200', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center' 
+                    }}
+                >
+                    <Typography variant="body2" color="text.secondary">
+                        No image available
+                    </Typography>
+                </Box>
             )}
-            <div className="pie-info">
-                <h3 className="pie-name">{pie.name}</h3>
-                <p className="pie-description">{pie.description}</p>
-            </div>
-        </div>
+            <CardContentStyled>
+                <Typography 
+                    gutterBottom 
+                    variant="h6" 
+                    component="div" 
+                    sx={{ fontWeight: 'bold', mb: 1 }}
+                >
+                    {pie.name}
+                </Typography>
+                <Divider sx={{ my: 1 }} />
+                <Typography variant="body2" color="text.secondary">
+                    {pie.description}
+                </Typography>
+            </CardContentStyled>
+        </Box>
     );
 };
 
