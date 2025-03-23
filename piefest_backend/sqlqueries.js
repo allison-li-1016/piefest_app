@@ -44,6 +44,9 @@ const GetAllPiesQuery =
 SELECT * FROM Pies;
 `
 
+const VoteForPieQuery = 
+`INSERT INTO Votes (userID, pieID, vote) VALUES (@userID, @pieID, @vote);`
+
 module.exports = {
     CreateUserTableQuery,
     CreateAdminTableQuery,
