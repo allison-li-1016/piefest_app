@@ -45,6 +45,24 @@ async function ConnectAndQuery() {
     }
 }
 
+async function VoteForPie(pieId, vote) {
+    try {
+        var poolConnection = await sql.connect(config);
+
+        console.log("Inserting vote into the table...");
+        await poolConnection.request()
+            .input('pieId', sql.Int, pieId)
+            .input('vote', sql.Double, vote)
+            .query(`INSERT INTO test (pieId, vote) VALUES (@pieId, @vote)`);
+
+        console.log("Vote casted successfully.");
+
+        poolConnection.close();
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
 module.exports = {
     ConnectAndQuery
 }
