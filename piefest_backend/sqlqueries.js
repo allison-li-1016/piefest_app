@@ -43,6 +43,8 @@ const GetAllPiesQuery =
 `
 SELECT * FROM Pies;
 `
+const BakePieQuery = 
+`INSERT INTO Votes (PieId, PieName) VALUES (@pieID, @name);`
 
 module.exports = {
     CreateUserTableQuery,
