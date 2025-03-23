@@ -45,21 +45,13 @@ async function ConnectAndQuery() {
     }
 }
 
-async function VoteForPie(pieId, vote) {
+async function VoteForPie(pieId, vote, userID) {
     try {
-        var poolConnection = await sql.connect(config);
-
-        console.log("Inserting vote into the table...");
-        await poolConnection.request()
-            .input('pieId', sql.Int, pieId)
-            .input('vote', sql.Double, vote)
-            .query(`INSERT INTO test (pieId, vote) VALUES (@pieId, @vote)`);
-
+        const sqlQuery = `INSERT INTO test (pieId, vote, userID) VALUES (${pieId}, ${vote}, ${userID})`;
+        await ConnectAndQuery(sqlQuery);
         console.log("Vote casted successfully.");
-
-        poolConnection.close();
     } catch (err) {
-        console.error(err.message);
+        console.error(`Vote cast failed: ${err.message}`);
     }
 }
 
