@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import PieCard from './PieCard';
 import { getPieUids, updatePieRatings } from './Helpers/Helpers';
+import AlertInput from './AlertInput';
+import Cookies from 'js-cookie';
 
 // MUI imports
 import {
@@ -53,6 +55,7 @@ function VoteInstance() {
 	const [pies, setPies] = useState([]);
 	const [ratings, setRatings] = useState({});
 	const [loading, setLoading] = useState(true);
+	const [isAlertOpen, setIsAlertOpen] = useState(false);
 
 	// Fetch pies on component mount
 	useEffect(() => {
@@ -101,6 +104,21 @@ function VoteInstance() {
 			alert('Failed to submit ratings.');
 		}
 	};
+
+	function isUserNameCookieSet() {
+		let firstName = Cookies.get("FirstName");
+		let lastName = Cookies.get("LastName");
+
+		return firstName != undefined && firstName != ""
+			&& lastName != undefined && lastName != "";
+	}
+
+	// Handle user name submission
+	const handleUserNameSubmission = ({ firstName, lastName }) => {
+		console.log("User's name:", firstName, lastName);
+		Cookies.set("FirstName", firstName, { expires: 7 });
+		Cookies.set("LastName", lastName, { expires: 7 });
+	  };
 
 	// Render the pie cards
 	return (
@@ -171,12 +189,21 @@ function VoteInstance() {
 								}
 							}}
 							onClick={() => {
+								// Popup asking for names if necessary
+								if (!isUserNameCookieSet()) {
+									setIsAlertOpen(true);
+								}
 								// Handle submit function here
 								handleSubmit();
 							}}
 						>
 							SUBMIT ALL RATINGS
 						</Button>
+						<AlertInput 
+							open={isAlertOpen}
+							handleClose={() => setIsAlertOpen(false)}
+							onSubmit={handleUserNameSubmission}
+						/>
 					</Box>
 				</div>
 			)}
