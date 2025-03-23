@@ -10,39 +10,41 @@ const config = {
     options: {
         encrypt: true,
         trustServerCertificate: true
+    },
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
     }
 }
 
-async function ConnectAndQuery() {
-    try {
-        var poolConnection = await sql.connect(config);
+const pool = new sql.ConnectionPool(config);
 
-        console.log("Reading rows from the Table...");
-        var resultSet = await poolConnection.request().query(`SELECT * FROM test`);
+pool.on('error', err => {
+    console.error('SQL Pool Error:', err);
+});
 
-        console.log(`${resultSet.recordset.length} rows returned.`);
 
-        // output column headers
-        var columns = "";
-        for (var column in resultSet.recordset.columns) {
-            columns += column + ", ";
-        }
-        console.log("%s\t", columns.substring(0, columns.length - 2));
+// Makes a connection to the database and executes the query, returns the result set or null on failure.
+// @param sqlQuery - The SQL query to execute
+// @param paramMap - A map of parameters for the SQL query
+// Caller needs to handle any exceptions properly
+async function ConnectAndQuery(sqlQuery, paramMap = new Map()) {
+    var connection = await pool.connect();
 
-        results = [];
-        // output row contents from default record set
-        resultSet.recordset.forEach(row => {
-            console.log("%s\t%s", row.id, row['dummy_data']);
-            results.push(row['dummy_data'])
-        });
+    var request = connection.request();
 
-        // close connection only when we're certain application is finished
-        poolConnection.close();
-
-        return results;
-    } catch (err) {
-        console.error(err.message);
+    // Iterate over the parameter map and add inputs
+    for (const [paramName, paramValue] of paramMap) {
+        request.input(paramName, paramValue);
     }
+
+    var resultSet = await request.query(sqlQuery);
+
+    // close connection only when we're certain application is finished
+    connection.close();
+
+    return resultSet.recordset;
 }
 
 async function VoteForPie(pieId, vote, userID) {
