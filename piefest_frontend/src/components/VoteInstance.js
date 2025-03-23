@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import PieCard from './PieCard';
-import { getPieUids, updatePieRating } from './Helpers/Helpers';
+import { getPieUids, updatePieRatings } from './Helpers/Helpers';
 
 // MUI imports
 import {
 	Box,
+	Button,
 	Typography,
 	Container,
 	Grid,
@@ -87,7 +88,17 @@ function VoteInstance() {
 				...prev,
 				[pieId]: value
 			}));
-			updatePieRating(pieId, 'user-uid', value);
+		}
+	};
+
+	// Handle submit function
+	const handleSubmit = async () => {
+		try {
+			await updatePieRatings(pies, ratings);
+			alert('Ratings submitted successfully!');
+		} catch (error) {
+			console.error("Error submitting ratings:", error);
+			alert('Failed to submit ratings.');
 		}
 	};
 
@@ -109,39 +120,65 @@ function VoteInstance() {
 					<CircularProgress />
 				</LoadingContainer>
 			) : (
-				<Grid container spacing={3}>
-					{pies.map(pie => (
-						<Grid item xs={12} sm={6} md={4} key={pie}>
-							<PieCardWrapper elevation={2}>
-								<Box sx={{ position: "relative" }}>
-									<PieCard uid={pie} />
-								</Box>
-
-								<RatingContainer>
-									<Typography variant="body1" sx={{ fontWeight: "medium" }}>
-										Your Rating (1-10)
-									</Typography>
-									<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-										<TextField
-											id={`rating-${pie}`}
-											type="number"
-											inputProps={{
-												min: 1,
-												max: 10,
-												step: 0.5
-											}}
-											value={ratings[pie]}
-											onChange={(e) => handleRatingChange(pie, e.target.value)}
-											placeholder="1-10"
-											size="small"
-											sx={{ width: '80px' }}
-										/>
+				<div>
+					<Grid container spacing={3}>
+						{pies.map(pie => (
+							<Grid item xs={12} sm={6} md={4} key={pie}>
+								<PieCardWrapper elevation={2}>
+									<Box sx={{ position: "relative" }}>
+										<PieCard uid={pie} />
 									</Box>
-								</RatingContainer>
-							</PieCardWrapper>
-						</Grid>
-					))}
-				</Grid>
+
+									<RatingContainer>
+										<Typography variant="body1" sx={{ fontWeight: "medium" }}>
+											Your Rating (1-10)
+										</Typography>
+										<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+											<TextField
+												id={`rating-${pie}`}
+												type="number"
+												inputProps={{
+													min: 1,
+													max: 10,
+													step: 0.5
+												}}
+												value={ratings[pie]}
+												onChange={(e) => handleRatingChange(pie, e.target.value)}
+												placeholder="1-10"
+												size="small"
+												sx={{ width: '80px' }}
+											/>
+										</Box>
+									</RatingContainer>
+								</PieCardWrapper>
+							</Grid>
+						))}
+					</Grid>
+					<Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+						<Button 
+							variant="contained" 
+							color="error" 
+							size="large"
+							sx={{ 
+								py: 1.5, 
+								px: 6, 
+								fontSize: '1.2rem', 
+								fontWeight: 'bold',
+								boxShadow: 6,
+								'&:hover': {
+									transform: 'scale(1.05)',
+									boxShadow: 10,
+								}
+							}}
+							onClick={() => {
+								// Handle submit function here
+								handleSubmit();
+							}}
+						>
+							SUBMIT ALL RATINGS
+						</Button>
+					</Box>
+				</div>
 			)}
 
 			{!loading && pies.length === 0 && (

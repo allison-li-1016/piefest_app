@@ -11,13 +11,8 @@ const getPie = async (uid) => {
     };
 }
 
-const updatePieRating = async (pieUid, userUid, rating) => {
-    if (rating < 1 || rating > 10) {
-        return;
-    }
-    // Simulate updating pie rating in a database
-    console.log(`Updated Pie ${pieUid} for user ${userUid} with rating ${rating}`);
-    return { success: true };
+const updatePieRatings = async (userUid, ratings) => {
+    return true;
 }
 
 const getRankings = async () => {
@@ -29,4 +24,4 @@ const getRankings = async () => {
     return ratings;
 }
 
-export { getPieUids, getPie, updatePieRating, getRankings };
+export { getPieUids, getPie, updatePieRatings, getRankings };
