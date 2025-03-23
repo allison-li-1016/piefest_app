@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './PieCard.css';  // You'll need to create this CSS file
+// import './PieCard.css';
 
 const PieCard = ({ uid }) => {
     const [pie, setPie] = useState({

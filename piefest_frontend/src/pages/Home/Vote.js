@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Rankings from '../../components/SqlList/VoteInstance';
+import VoteInstance from '../../components/VoteInstance';
 
-function Rate() {
+function Vote() {
     
     return (
         <div>
@@ -10,4 +10,4 @@ function Rate() {
     );
 }
 
-export default Rate;
+export default Vote;
