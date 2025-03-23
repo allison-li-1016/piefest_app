@@ -306,16 +306,16 @@ const similarChars = {
 };
 
 function generateRandomString() {
-    // Get 3 unique random adjectives
+    // Get random adjectives
     let selectedAdjectives = new Set();
-    while(selectedAdjectives.size < 3) {
+    while(selectedAdjectives.size < 2) {
         let randomIndex = Math.floor(Math.random() * longListOfAdjectives.length);
         selectedAdjectives.add(longListOfAdjectives[randomIndex]);
     }
     
-    // Get 2 random nouns
+    // Get 1 random noun
     let selectedNouns = new Set();
-    while (selectedNouns.size < 2) {
+    while (selectedNouns.size < 1) {
         let randomNounIndex = Math.floor(Math.random() * superLongNounList.length);
         selectedNouns.add(superLongNounList[randomNounIndex])
     }
@@ -336,12 +336,15 @@ function generateRandomString() {
     // Probability of replacing a character (0.0 to 1.0)
     const replacementProbability = 0.3;
 
-    return password.split('').map(char => {
-        // Only replace if character is in our dictionary and probability check passes
-        if (similarChars[char] && Math.random() < replacementProbability) {
-            const possibleReplacements = similarChars[char];
-            return possibleReplacements[Math.floor(Math.random() * possibleReplacements.length)];
-        }
-        return char;
-    }).join('');
+    // No-fun Brusniak wasn't a fan of randomly replacing characters with similar-looking unicode characters
+    // So we'll just return a normal looking password, but I'll leave the code here for funsies.
+    return password;
+    // return password.split('').map(char => {
+    //     // Only replace if character is in our dictionary and probability check passes
+    //     if (similarChars[char] && Math.random() < replacementProbability) {
+    //         const possibleReplacements = similarChars[char];
+    //         return possibleReplacements[Math.floor(Math.random() * possibleReplacements.length)];
+    //     }
+    //     return char;
+    // }).join('');
 }
