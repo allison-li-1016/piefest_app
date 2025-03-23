@@ -230,7 +230,7 @@ function VoteInstance() {
 										onChange={(e) => handleRatingChange(pie, e.target.value)}
 										placeholder="1-10"
 										size="small"
-										sx={{ width: '70px' }}
+										sx={{ width: '100px' }}
 									/>
 								</RatingContainer>
 							</PieCardWrapper>
