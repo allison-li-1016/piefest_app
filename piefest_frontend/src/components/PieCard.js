@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getPie } from './Helpers/Helpers';
 // import './PieCard.css';
 
 const PieCard = ({ uid }) => {
@@ -15,8 +16,9 @@ const PieCard = ({ uid }) => {
             try {
                 setLoading(true);
                 // Replace with your actual API endpoint
-                const response = "TODO";
-                setPie(response.data);
+                const response = await getPie(uid);
+                // Check if response has data property or is the data itself
+                setPie(response.data || response);
                 setError(null);
             } catch (err) {
                 console.error('Error fetching pie data:', err);

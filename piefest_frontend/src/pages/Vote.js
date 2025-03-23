@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import VoteInstance from '../../components/VoteInstance';
+import VoteInstance from '../components/VoteInstance';
 
 function Vote() {
     

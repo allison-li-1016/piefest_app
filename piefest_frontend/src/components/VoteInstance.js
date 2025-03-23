@@ -1,27 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PieCard from './PieCard';
+import { getPieUids, updatePieRating } from './Helpers/Helpers';
 
 function VoteInstance() {
-    // Gets pie uids
-    const getPies = async () => {
-
-    }
-
     const [pies, setPies] = useState([]);
     const [ratings, setRatings] = useState({});
     const [loading, setLoading] = useState(true);
 
     // Fetch pies on component mount
-    useState(() => {
+    useEffect(() => {
         const fetchData = async () => {
             try {
-                const pieData = await getPies();
-                setPies(pieData);
+                const uids = await getPieUids();
+                setPies(uids);
                 
                 // Initialize ratings object
                 const initialRatings = {};
-                pieData.forEach(pie => {
-                    initialRatings[pie.uid] = '';
+                uids.forEach(uid => {
+                    initialRatings[uid] = '';
                 });
                 setRatings(initialRatings);
                 
@@ -45,6 +41,7 @@ function VoteInstance() {
                 ...prev,
                 [pieId]: value
             }));
+            updatePieRating(pieId, 'user-uid', value);
         }
     };
 
@@ -58,18 +55,18 @@ function VoteInstance() {
             ) : (
                 <div className="pie-cards">
                     {pies.map(pie => (
-                        <div key={pie.uid}>
-                            <PieCard uid={pie.uid} />
+                        <div key={pie}>
+                            <PieCard uid={pie} />
                             <div className="rating-input">
-                                <label htmlFor={`rating-${pie.uid}`}>Rating (1-10):</label>
+                                <label htmlFor={`rating-${pie}`}>Rating (1-10):</label>
                                 <input
-                                    id={`rating-${pie.uid}`}
+                                    id={`rating-${pie}`}
                                     type="number"
                                     min="1"
                                     max="10"
                                     step="0.5"
-                                    value={ratings[pie.uid]}
-                                    onChange={(e) => handleRatingChange(pie.uid, e.target.value)}
+                                    value={ratings[pie]}
+                                    onChange={(e) => handleRatingChange(pie, e.target.value)}
                                     placeholder="Enter 1-10"
                                 />
                             </div>
