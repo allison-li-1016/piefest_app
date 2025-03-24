@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VoteForPieQuery, BakePieQuery } = require('./sqlqueries.js');
+const { VoteForPieQuery, BakePieQuery, AddUserQuery} = require('./sqlqueries.js');
 
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
@@ -55,28 +55,28 @@ async function BakePie(name) {
     ]));
 }
 
-async function AddUser(UserId, Username, Password) {
-    try {
-        if (!Number.isInteger(UserId)) {
-            throw new Error("Invalid userId: must be an integer.");
-        }
-        if (!isValidVarchar(Username, 50)) {  
-            throw new Error("Invalid username: must be a non-empty string within 50 characters.");
-        }
-        if (!isValidVarchar(Password, 64)) {  
-            throw new Error("Invalid password: must be a non-empty string within 64 characters.");
-        }
-
-        await ConnectAndQuery(AddUserQuery, new Map([
-            ['userID', UserID],
-            ['Username', Username],
-            ['Password', Password],
-        ]));
-
-        console.log("You chefed up a pie ;)");
+router.post('/add-user', async (req, res) => {
+    try { 
+        await AddUser(req.body.Username, req.body.Password);
+        res.send("User is entered into the competition 👨🏻‍🍳");
     } catch (err) {
-        console.error(`Pie entry failed: ${err.message}`);
+        res.status(500).send(`User entry failed: ${err.message}`);
     }
+});
+
+async function AddUser(Username, Password) {
+    if (!(typeof Username === "string" && Username.trim().length > 0 && Username.length <= 50)) {
+        throw new Error("Invalid username: must be a non-empty string within 50 characters.");
+    }
+
+    if (!(typeof Password === "string" && Password.trim().length > 0 && Password.length <= 64)) {
+        throw new Error("Invalid username: must be a non-empty string within 50 characters.");
+    }
+
+    await ConnectAndQuery(AddUserQuery, new Map([
+        ['Username', Username],
+        ['Password', Password],
+    ]));
 }
 
 module.exports = router;
