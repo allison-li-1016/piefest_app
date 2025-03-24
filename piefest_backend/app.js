@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
+const { VoteForPieQuery } = require('./sqlqueries.js');
 
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
@@ -22,7 +23,7 @@ async function VoteForPie(pieId, vote, userId) {
     if (!Number.isInteger(pieId)) {
         throw new Error("Invalid pieId: must be an integer.");
     }
-    if (typeof vote !== "number" || Number.isInteger(vote)) {
+    if (vote % 1 !== 0) {
         throw new Error("Invalid vote: must be a float.");
     }
     if (vote < 0 || vote > 10) {
@@ -30,8 +31,8 @@ async function VoteForPie(pieId, vote, userId) {
     }
 
     await ConnectAndQuery(VoteForPieQuery, new Map([
-        ['userID', userId],
-        ['pieID', pieId], 
+        ['userId', userId],
+        ['pieId', pieId], 
         ['vote', vote]
     ]));
 }
