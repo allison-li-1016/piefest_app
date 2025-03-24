@@ -1,43 +1,80 @@
 import React from "react";
+import { 
+    Container, 
+    Typography, 
+    Button, 
+    Box, 
+    List, 
+    ListItem, 
+    Paper,
+    Stack 
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
-  const [helloRes, setHelloRes] = React.useState(null);
-  function handleClick() {
-    fetch("/hello")
-      .then((res) => res.text())
-      .then((helloResponse) => setHelloRes(helloResponse));
-  }
+    const navigate = useNavigate();
 
-  return (
-    <div>
-    <header>
-        <h1>Welcome to Piefest!</h1>
-    </header>
-    <main>
-        <section>
-            <h2>About Piefest</h2>
-            <p>Piefest is an annual event celebrating all things pie. Join us for a day of delicious pies, fun activities, and great company!</p>
-            <p>Response from API: {helloRes}</p>
-            <button onClick={handleClick}>Click ME!!</button>
-            <p><a href="/vote">Voting Page</a></p>
-            <p><a href="/rankings">Rankings Page</a></p>
-        </section>
-        <section>
-            <h2>Event Schedule</h2>
-            <ul>
-                <li>10:00 AM - Opening Ceremony</li>
-                <li>11:00 AM - Pie Tasting</li>
-                <li>1:00 PM - Pie Eating Contest</li>
-                <li>3:00 PM - Award Ceremony</li>
-                <li>11:00 PM - After Party @ Ben's Mom's House</li>
-            </ul>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2025 Piefest. All rights reserved.</p>
-    </footer>
-    </div>
-  );
+    return (
+        <Container maxWidth="md">
+            <Box sx={{ py: 4 }}>
+                <Typography variant="h2" component="h1" gutterBottom align="center">
+                    Welcome to Piefest!
+                </Typography>
+
+                <Paper sx={{ p: 3, mb: 4 }}>
+                    <Typography variant="h4" gutterBottom>
+                        About Piefest
+                    </Typography>
+                    <Typography variant="body1" paragraph>
+                        Piefest is an annual event celebrating all things pie. Join us for a day of delicious pies, fun activities, and great company!
+                    </Typography>
+                    
+                    <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+                        <Button 
+                            variant="contained" 
+                            color="primary"
+                            onClick={() => navigate('/vote')}
+                        >
+                            Vote Now
+                        </Button>
+                        <Button 
+                            variant="contained" 
+                            color="secondary"
+                            onClick={() => navigate('/rankings')}
+                        >
+                            View Rankings
+                        </Button>
+                        <Button 
+                            variant="contained" 
+                            color="success"
+                            onClick={() => navigate('/create-pie')}
+                        >
+                            Submit a Pie
+                        </Button>
+                    </Stack>
+                </Paper>
+
+                <Paper sx={{ p: 3 }}>
+                    <Typography variant="h4" gutterBottom>
+                        Event Schedule
+                    </Typography>
+                    <List>
+                        <ListItem>10:00 AM - Opening Ceremony</ListItem>
+                        <ListItem>11:00 AM - Pie Tasting</ListItem>
+                        <ListItem>1:00 PM - Pie Eating Contest</ListItem>
+                        <ListItem>3:00 PM - Award Ceremony</ListItem>
+                        <ListItem>11:00 PM - After Party @ Ben's Mom's House</ListItem>
+                    </List>
+                </Paper>
+
+                <Box sx={{ mt: 4, textAlign: 'center' }}>
+                    <Typography variant="body2" color="text.secondary">
+                        © 2025 Piefest. All rights reserved.
+                    </Typography>
+                </Box>
+            </Box>
+        </Container>
+    );
 }
 
 export default Home;

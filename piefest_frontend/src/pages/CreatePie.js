@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import NavBar from '../components/NavBar';
 
 import { 
     Container, 
@@ -42,6 +43,8 @@ function CreatePie() {
     };
 
     return (
+        <div>
+        <NavBar />
         <Container maxWidth="md">
             <StyledPaper elevation={3}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
@@ -95,6 +98,7 @@ function CreatePie() {
                 </Box>
             </StyledPaper>
         </Container>
+        </div>
     );
 }
 
