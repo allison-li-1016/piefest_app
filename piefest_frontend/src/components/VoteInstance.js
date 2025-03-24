@@ -103,86 +103,144 @@ function VoteInstance() {
 	};
 
 	// Render the pie cards
+	const [showAnimation, setShowAnimation] = useState(false);
+
+	// Handle submit function
+	const handleSubmitWithAnimation = async () => {
+		setShowAnimation(true);
+		try {
+			await updatePieRatings(pies, ratings);
+			setTimeout(() => {
+				alert('Ratings submitted successfully!');
+				setShowAnimation(false);
+			}, 2000);
+		} catch (error) {
+			console.error("Error submitting ratings:", error);
+			alert('Failed to submit ratings.');
+			setShowAnimation(false);
+		}
+	};
+
 	return (
-		<Container maxWidth="lg" sx={{ py: 4 }}>
-			<PageHeader>
-				<Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: "bold" }}>
-					Vote for Pies
-				</Typography>
-				<Typography variant="subtitle1" color="text.secondary">
-					Rate your favorite pies on a scale from 1 to 10
-				</Typography>
-				<Divider sx={{ mt: 2 }} />
-			</PageHeader>
+		<div>
+		<Container maxWidth="lg" sx={{ py: 2 }}>
+			{/* Sticky header */}
+			<Box sx={{ 
+				position: 'sticky', 
+				top: 0, 
+				zIndex: 10, 
+				backgroundColor: 'background.paper',
+				pb: 1,
+				pt: 1,
+				display: 'flex',
+				justifyContent: 'space-between',
+				alignItems: 'center',
+				marginRight: 2
+			}}>
+				<Box>
+					<Typography variant="h5" component="h3" sx={{ fontWeight: "bold" }}>
+						Vote for Pies
+					</Typography>
+				</Box>
+				
+				<Box sx={{ position: 'relative' }}>
+					<Button 
+						variant="contained" 
+						color="success"
+						onClick={handleSubmitWithAnimation}
+						sx={{ 
+							py: 1, 
+							px: 2,
+							fontWeight: 'bold',
+							boxShadow: 3,
+							'&:hover': {
+								boxShadow: 6,
+							}
+						}}
+					>
+						SUBMIT RATINGS
+					</Button>
+					{showAnimation && (
+						<>
+							{
+							[...Array(6)].map((_, i) => {
+								// Generate angle between 180 (left) and 270 (down) degrees
+								const angle = 90 + Math.random() * 90;
+								return (
+									<Box
+										key={i}
+										component="span"
+										sx={{
+											position: 'absolute',
+											top: '50%',
+											left: '50%',
+											fontSize: '3rem',
+											animation: `pieConfetti${i} 1.5s ease-out forwards`,
+											opacity: 0,
+											pointerEvents: 'none',
+											zIndex: 100,
+											[`@keyframes pieConfetti${i}`]: {
+												'0%': {
+													transform: 'translate(-50%, -50%) rotate(0deg) scale(1.5)',
+													opacity: 1
+												},
+												'100%': {
+													transform: `translate(${Math.cos(angle * Math.PI/180) * 300}px, ${Math.sin(angle * Math.PI/180) * 300}px) rotate(${Math.random() * 720 - 360}deg) scale(0.2)`,
+													opacity: 0
+												}
+											}
+										}}
+									>
+										🥧
+									</Box>
+								);
+							})}
+						</>
+					)}
+				</Box>
+			</Box>
+			
+			<Divider sx={{ mt: 1, mb: 2 }} />
 
 			{loading ? (
 				<LoadingContainer>
 					<CircularProgress />
 				</LoadingContainer>
 			) : (
-				<div>
-					<Grid container spacing={3}>
-						{pies.map(pie => (
-							<Grid item xs={12} sm={6} md={4} key={pie}>
-								<PieCardWrapper elevation={2}>
-									<Box sx={{ position: "relative" }}>
-										<PieCard uid={pie} />
-									</Box>
+				<Grid container spacing={2}>
+					{pies.map(pie => (
+						<Grid item xs={12} sm={6} md={4} key={pie}>
+							<PieCardWrapper elevation={2}>
+								<Box sx={{ position: "relative" }}>
+									<PieCard uid={pie} />
+								</Box>
 
-									<RatingContainer>
-										<Typography variant="body1" sx={{ fontWeight: "medium" }}>
-											Your Rating (1-10)
-										</Typography>
-										<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-											<TextField
-												id={`rating-${pie}`}
-												type="number"
-												inputProps={{
-													min: 1,
-													max: 10,
-													step: 0.5
-												}}
-												value={ratings[pie]}
-												onChange={(e) => handleRatingChange(pie, e.target.value)}
-												placeholder="1-10"
-												size="small"
-												sx={{ width: '80px' }}
-											/>
-										</Box>
-									</RatingContainer>
-								</PieCardWrapper>
-							</Grid>
-						))}
-					</Grid>
-					<Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-						<Button 
-							variant="contained" 
-							color="error" 
-							size="large"
-							sx={{ 
-								py: 1.5, 
-								px: 6, 
-								fontSize: '1.2rem', 
-								fontWeight: 'bold',
-								boxShadow: 6,
-								'&:hover': {
-									transform: 'scale(1.05)',
-									boxShadow: 10,
-								}
-							}}
-							onClick={() => {
-								// Handle submit function here
-								handleSubmit();
-							}}
-						>
-							SUBMIT ALL RATINGS
-						</Button>
-					</Box>
-				</div>
+								<RatingContainer sx={{ py: 1 }}>
+									<Typography variant="body2" sx={{ fontWeight: "medium" }}>
+										Rating (1-10)
+									</Typography>
+									<TextField
+										type="number"
+										inputProps={{
+											min: 1,
+											max: 10,
+											step: 0.5
+										}}
+										value={ratings[pie]}
+										onChange={(e) => handleRatingChange(pie, e.target.value)}
+										placeholder="1-10"
+										size="small"
+										sx={{ width: '100px' }}
+									/>
+								</RatingContainer>
+							</PieCardWrapper>
+						</Grid>
+					))}
+				</Grid>
 			)}
 
 			{!loading && pies.length === 0 && (
-				<Paper sx={{ p: 4, textAlign: "center" }}>
+				<Paper sx={{ p: 3, textAlign: "center" }}>
 					<Typography variant="h6" gutterBottom>
 						No pies found
 					</Typography>
@@ -192,6 +250,7 @@ function VoteInstance() {
 				</Paper>
 			)}
 		</Container>
+		</div>
 	);
 }
 
