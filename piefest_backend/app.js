@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VoteForPieQuery } = require('./sqlqueries.js');
-const { BakePieQuery } = require('./sqlqueries.js');
+const { VoteForPieQuery, BakePieQuery } = require('./sqlqueries.js');
 
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
@@ -38,9 +37,9 @@ async function VoteForPie(pieId, vote, userId) {
     ]));
 }
 
-router.post('/bake-pie', async (req, res) => {
+router.post('/bake-pie/:name', async (req, res) => {
     try { 
-        await BakePie(req.body.name);
+        await BakePie(req.params.name);
         res.send("You chefed up a pie 🥳");
     } catch (err) {
         res.status(500).send(`Pie entry failed: ${err.message}`);
