@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery} = require('./sqlqueries.js');
+const { VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery} = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
@@ -99,6 +99,28 @@ router.get('/get-all-pies', async (req, res) => {
 async function GetAllPies() {
     const pies = await ConnectAndQuery(GetAllPiesQuery);
     return pies;
+}
+
+router.get('/get-pie/:pieId', async (req, res) => {
+    try { 
+        const pie = await GetPie(req.params.pieId);
+        res.json({
+            message: "Pie successfully retrieved 🥧",
+            pie: pie
+        });
+    } catch (err) {
+        res.status(500).send(`User entry failed: ${err.message}`);
+    }
+});
+
+async function GetPie(pieId) {
+    if (!Number.isInteger(pieId)) {
+        throw new Error("Invalid pieId: must be an integer.");
+    }
+    const pie = await ConnectAndQuery(GetPieQuery, new Map([
+        ['pieId', pieId]
+    ]));
+    return pie;
 }
 
 module.exports = router;
