@@ -87,7 +87,6 @@ async function AddUser(username) {
 router.get('/get-all-pies', async (req, res) => {
     try { 
         const allPies = await GetAllPies();
-        console.log(allPies);
         res.json({
             message: "Pies successfully retrieved 🥧",
             pies: allPies
