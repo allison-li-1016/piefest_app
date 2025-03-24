@@ -51,7 +51,7 @@ const BakePieQuery =
 `INSERT INTO Pies (PieName) VALUES (@name);`
 
 const AddUserQuery = 
-`INSERT INTO Users (Username, Password) VALUES (@Username, @Password);`
+`INSERT INTO Users (Username, Password) VALUES (@username, @password);`
 
 module.exports = {
     CreateUserTableQuery,

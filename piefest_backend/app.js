@@ -58,7 +58,7 @@ async function BakePie(name) {
 
 router.post('/add-user', async (req, res) => {
     try { 
-        const userData = await AddUser(req.body.Username);
+        const userData = await AddUser(req.body.username);
         res.json({
             message: "User is entered into the competition 👨🏻‍🍳",
             username: userData[0], 
@@ -69,19 +69,19 @@ router.post('/add-user', async (req, res) => {
     }
 });
 
-async function AddUser(Username) {
-    if (!(typeof Username === "string" && Username.trim().length > 0 && Username.length <= 50)) {
+async function AddUser(username) {
+    if (!(typeof username === "string" && username.trim().length > 0 && username.length <= 50)) {
         throw new Error("Invalid username: must be a non-empty string within 50 characters.");
     }
 
-    var Password = returnPassword();
+    var password = returnPassword();
 
     await ConnectAndQuery(AddUserQuery, new Map([
-        ['Username', Username],
-        ['Password', Password],
+        ['username', username],
+        ['password', password],
     ]));
 
-    return [Username, Password];
+    return [username, password];
 }
 
 module.exports = router;
