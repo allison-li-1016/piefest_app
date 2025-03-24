@@ -46,8 +46,12 @@ SELECT * FROM Pies;
 
 const VoteForPieQuery = 
 `INSERT INTO Votes (UserId, PieId, Vote) VALUES (@userId, @pieId, @vote);`
+
 const BakePieQuery = 
 `INSERT INTO Pies (PieName) VALUES (@name);`
+
+const AddUserQuery = 
+`INSERT INTO Users (Username, Password) VALUES (@username, @password);`
 
 module.exports = {
     CreateUserTableQuery,
@@ -57,5 +61,6 @@ module.exports = {
     CheckAdminCredentialsQuery,
     GetAllPiesQuery,
     VoteForPieQuery,
-    BakePieQuery
+    BakePieQuery,
+    AddUserQuery
 }

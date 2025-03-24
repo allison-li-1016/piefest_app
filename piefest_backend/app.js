@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VoteForPieQuery, BakePieQuery } = require('./sqlqueries.js');
+const { VoteForPieQuery, BakePieQuery, AddUserQuery} = require('./sqlqueries.js');
+const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
@@ -53,6 +54,34 @@ async function BakePie(name) {
     await ConnectAndQuery(BakePieQuery, new Map([
         ['name', name]
     ]));
+}
+
+router.post('/add-user', async (req, res) => {
+    try { 
+        const userData = await AddUser(req.body.username);
+        res.json({
+            message: "User is entered into the competition 👨🏻‍🍳",
+            username: userData[0], 
+            password: userData[1]
+        });
+    } catch (err) {
+        res.status(500).send(`User entry failed: ${err.message}`);
+    }
+});
+
+async function AddUser(username) {
+    if (!(typeof username === "string" && username.trim().length > 0 && username.length <= 50)) {
+        throw new Error("Invalid username: must be a non-empty string within 50 characters.");
+    }
+
+    var password = returnPassword();
+
+    await ConnectAndQuery(AddUserQuery, new Map([
+        ['username', username],
+        ['password', password],
+    ]));
+
+    return [username, password];
 }
 
 module.exports = router;
