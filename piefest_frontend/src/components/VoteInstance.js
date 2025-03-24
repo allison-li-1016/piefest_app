@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PieCard from './PieCard';
 import { getPieUids, updatePieRatings } from './Helpers/Helpers';
+import { useNavigate } from 'react-router-dom';
 
 // MUI imports
 import {
@@ -53,6 +54,12 @@ function VoteInstance() {
 	const [pies, setPies] = useState([]);
 	const [ratings, setRatings] = useState({});
 	const [loading, setLoading] = useState(true);
+	const navigate = useNavigate();
+
+	const handleHomeClick = () => {
+		navigate('/');
+	}
+
 
 	// Fetch pies on component mount
 	useEffect(() => {
@@ -141,6 +148,25 @@ function VoteInstance() {
 					<Typography variant="h5" component="h3" sx={{ fontWeight: "bold" }}>
 						Vote for Pies
 					</Typography>
+				</Box>
+
+				<Box>
+				<Button 
+						variant="contained" 
+						color="success"
+						onClick={handleHomeClick}
+						sx={{ 
+							py: 1, 
+							px: 2,
+							fontWeight: 'bold',
+							boxShadow: 3,
+							'&:hover': {
+								boxShadow: 6,
+							}
+						}}
+					>
+						Home
+					</Button>
 				</Box>
 				
 				<Box sx={{ position: 'relative' }}>

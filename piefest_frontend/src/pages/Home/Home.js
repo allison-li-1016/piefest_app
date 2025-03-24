@@ -1,5 +1,4 @@
 import React from "react";
-import SqlList from "../../components/SqlList/SqlList";
 
 function Home() {
   const [helloRes, setHelloRes] = React.useState(null);
@@ -20,10 +19,8 @@ function Home() {
             <p>Piefest is an annual event celebrating all things pie. Join us for a day of delicious pies, fun activities, and great company!</p>
             <p>Response from API: {helloRes}</p>
             <button onClick={handleClick}>Click ME!!</button>
-        </section>
-        <section>
-            <h2>Here's a fun section where we make a call to the db</h2>
-            <SqlList />
+            <p><a href="/vote">Voting Page</a></p>
+            <p><a href="/rankings">Rankings Page</a></p>
         </section>
         <section>
             <h2>Event Schedule</h2>
