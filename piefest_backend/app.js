@@ -69,7 +69,7 @@ async function AddUser(Username, Password) {
         throw new Error("Invalid username: must be a non-empty string within 50 characters.");
     }
     if (!(typeof Password === "string" && Password.trim().length > 0 && Password.length <= 64)) {
-        throw new Error("Invalid username: must be a non-empty string within 64 characters.");
+        throw new Error("Invalid password: must be a non-empty string within 64 characters.");
     }
     await ConnectAndQuery(AddUserQuery, new Map([
         ['Username', Username],
