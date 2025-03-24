@@ -109,14 +109,16 @@ router.get('/get-pie/:pieId', async (req, res) => {
             pie: pie
         });
     } catch (err) {
-        res.status(500).send(`User entry failed: ${err.message}`);
+        res.status(500).send(`Get Pie failed: ${err.message}`);
     }
 });
 
-async function GetPie(pieId) {
-    if (!Number.isInteger(pieId)) {
-        throw new Error("Invalid pieId: must be an integer.");
+async function GetPie(pieIdString) {
+    const pieId = parseInt(pieIdString, 10);
+    if (isNaN(pieId)) {
+        throw new Error("Invalid pieId: must be a valid integer.");
     }
+
     const pie = await ConnectAndQuery(GetPieQuery, new Map([
         ['pieId', pieId]
     ]));

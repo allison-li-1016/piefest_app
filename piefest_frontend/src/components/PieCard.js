@@ -10,6 +10,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+const GARMFIELD_IMG = "/images/pie-placeholder.jpg";  // Note the leading slash
+
 // Styled components to match Rankings.js styling
 const CardContentStyled = styled(CardContent)(({ theme }) => ({
     padding: theme.spacing(2),
@@ -84,19 +86,11 @@ const PieCard = ({ uid }) => {
                     alt={pie.name}
                 />
             ) : (
-                <Box 
-                    sx={{ 
-                        height: 160, 
-                        bgcolor: 'grey.200', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center' 
-                    }}
-                >
-                    <Typography variant="body2" color="text.secondary">
-                        No image available
-                    </Typography>
-                </Box>
+                <PieImage
+                    component="img"
+                    image={GARMFIELD_IMG}
+                    alt={pie.name}
+                />
             )}
             <CardContentStyled>
                 <Typography 
@@ -106,10 +100,6 @@ const PieCard = ({ uid }) => {
                     sx={{ fontWeight: 'bold', mb: 1 }}
                 >
                     {pie.name}
-                </Typography>
-                <Divider sx={{ my: 1 }} />
-                <Typography variant="body2" color="text.secondary">
-                    {pie.description}
                 </Typography>
             </CardContentStyled>
         </Box>
