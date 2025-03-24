@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import PieCard from "../components/PieCard"
 import { getRankings, getPieUids } from "../components/Helpers/Helpers"
+import NavBar from "../components/NavBar"
 
 // MUI imports
 import {
@@ -81,6 +82,8 @@ function Rankings() {
 
 	// Render the pie cards
 	return (
+		<div>
+		<NavBar />
 		<Container maxWidth="lg" sx={{ py: 4 }}>
 			<PageHeader>
 				<Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: "bold" }}>
@@ -166,6 +169,7 @@ function Rankings() {
 				</Paper>
 			)}
 		</Container>
+		</div>
 	)
 }
 
