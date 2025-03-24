@@ -12,7 +12,7 @@ const config = {
         trustServerCertificate: true
     },
     pool: {
-        max: 10,
+        max: 10000,
         min: 0,
         idleTimeoutMillis: 30000
     }
@@ -42,7 +42,7 @@ async function ConnectAndQuery(sqlQuery, paramMap = new Map()) {
     var resultSet = await request.query(sqlQuery);
 
     // close connection only when we're certain application is finished
-    connection.close();
+    // connection.close(); This seems to be causing problems???
 
     return resultSet.recordset;
 }
