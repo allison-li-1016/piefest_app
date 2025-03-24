@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VoteForPieQuery } = require('./sqlqueries.js');
+const { VoteForPieQuery, BakePieQuery } = require('./sqlqueries.js');
 
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
@@ -34,6 +34,24 @@ async function VoteForPie(pieId, vote, userId) {
         ['userId', userId],
         ['pieId', pieId], 
         ['vote', vote]
+    ]));
+}
+
+router.post('/bake-pie/:name', async (req, res) => {
+    try { 
+        await BakePie(req.params.name);
+        res.send("You chefed up a pie 🥳");
+    } catch (err) {
+        res.status(500).send(`Pie entry failed: ${err.message}`);
+    }
+});
+
+async function BakePie(name) {
+    if (!(typeof name === "string" && name.trim().length > 0 && name.length <= 100)) {
+        throw new Error("Invalid pie name: must be a non-empty string within 100 characters.");
+    }
+    await ConnectAndQuery(BakePieQuery, new Map([
+        ['name', name]
     ]));
 }
 
