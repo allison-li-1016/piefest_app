@@ -20,7 +20,7 @@ const mainRoutes = require('./app');
 
 // Apply routes in order
 app.use('/admin', adminRoutes);
-app.use('/', mainRoutes);
+app.use('/backend', mainRoutes);
 
 // Catch-all route for React app - must be last
 app.get('*', (req, res) => {
