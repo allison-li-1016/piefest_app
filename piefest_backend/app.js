@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VoteForPieQuery, BakePieQuery, AddUserQuery} = require('./sqlqueries.js');
+const { VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery} = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
@@ -82,6 +82,23 @@ async function AddUser(username) {
     ]));
 
     return [username, password];
+}
+
+router.get('/get-all-pies', async (req, res) => {
+    try { 
+        const allPies = await GetAllPies();
+        res.json({
+            message: "Pies successfully retrieved 🥧",
+            pies: allPies
+        });
+    } catch (err) {
+        res.status(500).send(`User entry failed: ${err.message}`);
+    }
+});
+
+async function GetAllPies() {
+    const pies = await ConnectAndQuery(GetAllPiesQuery);
+    return pies;
 }
 
 module.exports = router;
