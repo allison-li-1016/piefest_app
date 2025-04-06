@@ -36,4 +36,7 @@ def send_email(req: func.HttpRequest) -> func.HttpResponse:
  
     output = server.sendmail(auth[0], email, message)
 
-    return func.HttpResponse(f"Successfully sent email to {email} with output {output} and message {message}")
+    if output:
+        return func.HttpResponse("SMTP failed to send message", status_code=500)
+
+    return func.HttpResponse(f"Successfully sent email to {email} with message {message}")
