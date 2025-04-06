@@ -50,6 +50,9 @@ const VoteForPieQuery =
 const BakePieQuery = 
 `INSERT INTO Pies (PieName) VALUES (@name);`
 
+const GetUserQuery = 
+`SELECT UserId, Username, Password FROM USERS where Username = @username;`
+
 const AddUserQuery = 
 `INSERT INTO Users (Username, Password) VALUES (@username, @password);`
 
@@ -78,5 +81,6 @@ module.exports = {
     BakePieQuery,
     AddUserQuery,
     GetPieQuery,
-    GetVotesQuery
+    GetVotesQuery,
+    GetUserQuery
 }
