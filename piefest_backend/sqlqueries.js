@@ -56,6 +56,17 @@ const AddUserQuery =
 const GetPieQuery = 
 `SELECT * FROM Pies WHERE PieId = @pieId;` 
 
+const GetVotesQuery = 
+`SELECT TOP (@limit)
+    PieID,
+    AVG(Vote) AS AverageVote
+FROM 
+    Votes
+GROUP BY 
+    PieID
+ORDER BY 
+    AverageVote DESC;`
+
 module.exports = {
     CreateUserTableQuery,
     CreateAdminTableQuery,
@@ -66,5 +77,6 @@ module.exports = {
     VoteForPieQuery,
     BakePieQuery,
     AddUserQuery,
-    GetPieQuery
+    GetPieQuery,
+    GetVotesQuery
 }
