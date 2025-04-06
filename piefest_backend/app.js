@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery} = require('./sqlqueries.js');
+const { GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery} = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
@@ -65,7 +65,8 @@ router.post('/add-user', async (req, res) => {
             password: userData[1]
         });
     } catch (err) {
-        res.status(500).send(`User entry failed: ${err.message}`);
+        console.log(err);
+        res.status(500).send(`User entry failed: ${err}`);
     }
 });
 
@@ -74,14 +75,50 @@ async function AddUser(username) {
         throw new Error("Invalid username: must be a non-empty string within 50 characters.");
     }
 
-    var password = returnPassword();
-
-    await ConnectAndQuery(AddUserQuery, new Map([
-        ['username', username],
-        ['password', password],
+    const existingUser = await ConnectAndQuery(GetUserQuery, new Map([
+        ['username', username]
     ]));
 
-    return [username, password];
+    console.log("Existing user: ", existingUser);
+
+    var password;
+
+    if (existingUser === undefined) {
+        throw new Error("API call is messed up.");
+    } else if (existingUser.length === 0) {
+        // User does not exist, create a new user
+        password = returnPassword();
+        
+        await ConnectAndQuery(AddUserQuery, new Map([
+            ['username', username],
+            ['password', password],
+        ]));
+    } else {
+        password = existingUser[0].Password;
+    }
+
+    // Send email notification
+    try {
+        const emailUrl = process.env.ACCOUNT_CREATION_EMAIL_ENDPOINT;
+        const response = await fetch(emailUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: username,
+                cred: password
+            })
+        });
+        
+        if (!response.ok) {
+            console.error('Email notification failed:', await response.text());
+        }
+    } catch (error) {
+        console.error('Error sending email notification:', error);
+    }
+
+    return username;
 }
 
 router.get('/get-all-pies', async (req, res) => {

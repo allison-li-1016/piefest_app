@@ -27,20 +27,18 @@ function Login() {
         setSuccess('');
 
         try {
-            // TODO: Implement function to send email and update UI
-            const response = false;
-            // const response = await fetch('/api/register', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ email: registerEmail })
-            // });
+            const response = await fetch('/backend/add-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username: registerEmail })
+            });
 
-            // if (!response.ok) throw new Error('Registration failed');
+            if (!response.ok) throw new Error('Registration failed');
             
-            // setSuccess('Email Sent to ' + registerEmail + '! Check for your password and login here :)');
-            // setRegisterEmail('');
+            setSuccess('Email Sent to ' + registerEmail + '! Check for your password and login here :)');
+            setRegisterEmail('');
         } catch (err) {
             setError(err.message);
         }
