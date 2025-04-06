@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import PieCard from "../components/PieCard"
-import { getRankings, getPieUids } from "../components/Helpers/Helpers"
+import { getRankings, getPieUids, getTopPies} from "../components/Helpers/Helpers"
 import NavBar from "../components/NavBar"
 
 // MUI imports
@@ -61,13 +61,13 @@ function Rankings() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const uids = await getPieUids()
-				setPies(uids)
+				const results = await getTopPies()
+				const pieIds = results.map(result => result.PieId)
+				setPies(pieIds)
 
 				// Initialize ratings object
 				getRankings().then((r) => {
 					setRatings(r)
-					console.log(r)
 					setLoading(false)
 				})
 			} catch (error) {
