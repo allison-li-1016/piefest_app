@@ -23,9 +23,10 @@ AND Password = @pass;
 `
 const CreatePieTableQuery =
 `
-Create TABLE Pies (
+CREATE TABLE Pies (
     PieId INT IDENTITY(1,1) PRIMARY KEY,
-    PieName VARCHAR(100) NOT NULL
+    PieName VARCHAR(100) NOT NULL,
+    PieImage VARCHAR(MAX) NULL
 );
 `
 const CreateVotesTableQuery =
