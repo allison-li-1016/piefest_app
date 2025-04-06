@@ -58,12 +58,12 @@ const GetPieQuery =
 
 const GetVotesQuery = 
 `SELECT TOP (@limit)
-    PieID,
+    PieId,
     AVG(Vote) AS AverageVote
 FROM 
     Votes
 GROUP BY 
-    PieID
+    PieId
 ORDER BY 
     AverageVote DESC;`
 
