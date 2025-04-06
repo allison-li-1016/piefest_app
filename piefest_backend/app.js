@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery} = require('./sqlqueries.js');
+const { VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery} = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
@@ -123,6 +123,35 @@ async function GetPie(pieIdString) {
         ['pieId', pieId]
     ]));
     return pie;
+}
+
+router.get('/calculate-votes', async (req, res) => {
+    try { 
+        limit = parseInt(req.body.limit, 10);
+        const votes = await GetResults(limit);
+        
+        res.json({
+            message: "Votes successfully calculated 🥸",
+            results: votes
+        });
+    } catch (err) {
+        res.status(500).send(`Get votes failed: ${err.message}`);
+    }
+});
+
+async function GetResults(limit) {
+    if (isNaN(limit)) {
+        limit = 10;
+    } 
+    
+    if (limit < 0) {
+        throw new Error("Limit must be greater than or equal to 0.");
+    } 
+
+    const votes = await ConnectAndQuery(GetVotesQuery, new Map([
+        ['limit', limit]
+    ]));
+    return votes;
 }
 
 module.exports = router;
