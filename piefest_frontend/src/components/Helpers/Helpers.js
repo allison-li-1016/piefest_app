@@ -13,6 +13,19 @@ const getPieUids = async () => {
     }
 }
 
+const getAllVotesForUser = async (userId) => {
+    try {
+        let res = await fetch('/backend/get-user-votes/' + userId);
+        if (res.status != 200) {
+            throw new Error(`Failed to get all votes with error code ${res.status}. Please try again.`);
+        }
+        let resJson = await res.json();
+        return resJson.allVotes;
+    } catch (err) {
+        throw new Error(`Failed to get all votes. Please try again. Error: ${err.message}`);
+    }
+}
+
 const getTopPies = async () => {
     try {
         let res = await fetch('/backend/calculate-votes');
@@ -116,4 +129,4 @@ const getRankings = async () => {
     }
 }
 
-export { getPieUids, getPie, getAllPies, updatePieRatings, getRankings, getTopPies };
+export { getPieUids, getPie, getAllPies, updatePieRatings, getRankings, getTopPies, getAllVotesForUser };

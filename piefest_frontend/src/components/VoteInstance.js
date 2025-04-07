@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import PieCard from './PieCard';
-import { getPieUids, updatePieRatings, getAllPies } from './Helpers/Helpers';
+import { updatePieRatings, getAllPies, getAllVotesForUser } from './Helpers/Helpers';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
 
 // MUI imports
 import {
@@ -60,16 +59,17 @@ function VoteInstance() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				// const uids = await getPieUids();
-				// setPies(uids);
-
 				const allPies = await getAllPies();
 				setPies(allPies);
+
+				const userId = parseInt(Cookies.get('userId'), 10);
+				const votes = await getAllVotesForUser(userId);
 				
 				// Initialize ratings object
 				const initialRatings = {};
-				allPies.forEach(pie => {
-					initialRatings[pie.id] = ''; // TODO: Set default to existing rating if any, else ''
+				
+				votes.forEach(pie => {
+					initialRatings[pie.PieId] = pie.Vote;
 				});
 				setRatings(initialRatings);
 				
