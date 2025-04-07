@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import PieCard from "../components/PieCard"
-import { getRankings, getPieUids, getAllPies } from "../components/Helpers/Helpers"
+import { getRankings, getPieUids, getTopPies} from "../components/Helpers/Helpers"
 import NavBar from "../components/NavBar"
 
 // MUI imports
@@ -61,15 +61,13 @@ function Rankings() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				// const uids = await getPieUids()
-				// setPies(uids)
-				const allPies = await getAllPies() // TODO: Get ratings from pies from db
-				setPies(allPies)
+				const results = await getTopPies()
+				const pieIds = results.map(result => result.PieId)
+				setPies(pieIds)
 
 				// Initialize ratings object
 				getRankings().then((r) => {
 					setRatings(r)
-					console.log(r)
 					setLoading(false)
 				})
 			} catch (error) {
@@ -120,35 +118,32 @@ function Rankings() {
 						.map((pie, index) => (
 							<Grid item xs={12} sm={6} md={4} key={pie}>
 								<PieCardWrapper elevation={2}>
-									<Box sx={{ position: "relative" }}>
-										<PieCard name={pie.name} description={''} image={pie.image} />
-
-										{/* Top ranking badges */}
-										{index < 3 && (
-											<Chip
-												label={`#${index + 1}`}
-												color={index === 0 ? "warning" : index === 1 ? "default" : "secondary"}
-												sx={{
-													position: "absolute",
-													top: 12,
-													right: 12,
-													fontWeight: "bold",
-												}}
-											/>
-										)}
-									</Box>
+								<Box sx={{ position: "relative" }}>
+									<PieCard uid={pie} />
+									<Chip
+										label={`#${index + 1}`}
+										sx={{
+											position: "absolute",
+											top: 12,
+											right: 12,
+											fontWeight: "bold",
+											backgroundColor: index === 0 
+												? "#FFD700" // Gold
+												: index === 1 
+												? "#C0C0C0" // Silver
+												: index === 2
+												? "#CD7F32" // Bronze
+												: "#E0E0E0", // Grey for remaining rankings
+											color: index < 3 ? "#000000" : "#666666",
+										}}
+									/>
+								</Box>
 
 									<RatingContainer>
 										<Typography variant="body1" sx={{ fontWeight: "medium" }}>
 											Rating
 										</Typography>
 										<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-											{/* <Rating
-												value={ratings && ratings[pie] ? parseFloat(ratings[pie]) || 0 : 0}
-												readOnly
-												precision={0.5}
-												size="small"
-											/>	 */}
 											<Typography variant="body1" sx={{ fontWeight: "bold" }}>
 												{ratings && ratings[pie] ? Number.parseFloat(ratings[pie]).toFixed(2) : "N/A"}
 											</Typography>

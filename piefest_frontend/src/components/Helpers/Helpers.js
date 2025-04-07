@@ -13,6 +13,20 @@ const getPieUids = async () => {
     }
 }
 
+const getTopPies = async () => {
+    try {
+        let res = await fetch('/backend/calculate-votes');
+        if (res.status != 200) {
+            throw new Error(`Failed to get pie results with error code ${res.status}. Please try again.`);
+        }
+        let resJson = await res.json();
+
+        return resJson.results
+    } catch (err) {
+        throw new Error(`Failed to get all pies. Please try again. Error: ${err.message}`);
+    }
+}
+
 const getPie = async (uid) => {
     try {
         let res = await fetch('/backend/get-pie/' + uid);
@@ -45,16 +59,61 @@ const getAllPies = async () => {
 }
 
 const updatePieRatings = async (userUid, ratings) => {
-    return true;
+    try {
+        const votePromises = Object.entries(ratings)
+        .filter(([_, vote]) => vote !== null && vote !== '')
+        .map(async ([pieId, vote]) => {
+            const body = {
+                "userId": userUid,
+                "pieId": parseInt(pieId),
+                "vote": parseFloat(vote)
+            };
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            };
+
+            const res = await fetch('/backend/vote', requestOptions);
+            
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error('Vote casting failed:', {
+                    pieId: pieId,
+                    status: res.status,
+                    statusText: res.statusText,
+                    errorMessage: errorText
+                });
+                throw new Error(`Vote casting failed for pie ${pieId}: ${errorText}`);
+            }
+            return true;
+        });
+
+        await Promise.all(votePromises);
+        return true;
+    } catch (error) {
+        console.error('Error in updatePieRatings:', error.message);
+        throw error;
+    }
 }
 
 const getRankings = async () => {
-    // Simulate fetching rankings from an API
-    let ratings = { "550e8400-e29b-41d4-a716-446655440000": 8.5 ,
-        "6ba7b810-9dad-11d1-80b4-00c04fd430c8": 7.2 ,
-        "f47ac10b-58cc-4372-a567-0e02b2c3d479": 9.1 }
-    ;
-    return ratings;
+    try {
+        let res = await fetch('/backend/calculate-votes');
+        if (res.status != 200) {
+            throw new Error(`Failed to get all pies with error code ${res.status}. Please try again.`);
+        }
+        let resJson = await res.json();
+        // Transform array into dictionary
+        const resultsDict = resJson.results.reduce((acc, curr) => {
+            acc[curr.PieId] = curr.AverageVote;
+            return acc;
+        }, {});
+        return resultsDict;
+    } catch (err) {
+        throw new Error(`Failed to get all pies. Please try again. Error: ${err.message}`);
+    }
 }
 
-export { getPieUids, getPie, getAllPies, updatePieRatings, getRankings };
+export { getPieUids, getPie, getAllPies, updatePieRatings, getRankings, getTopPies };
