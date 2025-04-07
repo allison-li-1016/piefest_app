@@ -1,11 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery} = require('./sqlqueries.js');
+const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery, GetAllVotesForUserQuery } = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
+});
+
+router.get('/get-user-votes/:userid', async (req, res) => {
+    try { 
+        const votes = await ConnectAndQuery(GetAllVotesForUserQuery, new Map([
+            ['userId', req.params.userid]
+        ]));
+        res.json({
+            message: "User successfully retrieved 👨🏻‍🍳",
+            allVotes: votes
+        });
+    } catch (err) {
+        res.status(500).send(`Get User Votes failed: ${err.message}`);
+    }
 });
 
 router.post('/vote', async (req, res) => {
