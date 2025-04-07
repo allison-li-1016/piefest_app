@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import PieCard from './PieCard';
-import { getPieUids, updatePieRatings } from './Helpers/Helpers';
+import { updatePieRatings, getAllPies, getAllVotesForUser } from './Helpers/Helpers';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
 
 // MUI imports
 import {
@@ -56,18 +55,21 @@ function VoteInstance() {
 	const [ratings, setRatings] = useState({});
 	const [loading, setLoading] = useState(true);
 
-
 	// Fetch pies on component mount
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const uids = await getPieUids();
-				setPies(uids);
+				const allPies = await getAllPies();
+				setPies(allPies);
+
+				const userId = parseInt(Cookies.get('userId'), 10);
+				const votes = await getAllVotesForUser(userId);
 				
 				// Initialize ratings object
 				const initialRatings = {};
-				uids.forEach(uid => {
-					initialRatings[uid] = '';
+				
+				votes.forEach(pie => {
+					initialRatings[pie.PieId] = pie.Vote;
 				});
 				setRatings(initialRatings);
 				
@@ -233,40 +235,36 @@ function VoteInstance() {
 					<CircularProgress />
 				</LoadingContainer>
 			) : (
-				<>
-					<Grid container spacing={2}>
-						{pies.map(pie => (
-							<Grid item xs={12} sm={6} md={4} key={pie}>
-								<PieCardWrapper elevation={2}>
-									<Box sx={{ position: "relative" }}>
-										<PieCard uid={pie} />
-									</Box>
+				<Grid container spacing={2}>
+					{pies.map(pie => (
+						<Grid item xs={12} sm={6} md={4} key={pie}>
+							<PieCardWrapper elevation={2}>
+								<Box sx={{ position: "relative" }}>
+									<PieCard name={pie.name} description={''} image={pie.image} />
+								</Box>
 
-									<RatingContainer sx={{ py: 1 }}>
-										<Typography variant="body2" sx={{ fontWeight: "medium" }}>
-											Rating (1-10)
-										</Typography>
-										<TextField
-											type="number"
-											inputProps={{
-												min: 1,
-												max: 10,
-												step: 0.5
-											}}
-											value={ratings[pie]}
-											onChange={(e) => handleRatingChange(pie, e.target.value)}
-											placeholder="1-10"
-											size="small"
-											sx={{ width: '100px' }}
-										/>
-									</RatingContainer>
-								</PieCardWrapper>
-							</Grid>
-							
-						))}
-					</Grid>
-					<Box sx={{ height: '100px', mb: 2 }} />
-				</>
+								<RatingContainer sx={{ py: 1 }}>
+									<Typography variant="body2" sx={{ fontWeight: "medium" }}>
+										Rating (1-10)
+									</Typography>
+									<TextField
+										type="number"
+										inputProps={{
+											min: 1,
+											max: 10,
+											step: 0.5
+										}}
+										value={ratings[pie.id]}
+										onChange={(e) => handleRatingChange(pie.id, e.target.value)}
+										placeholder="1-10"
+										size="small"
+										sx={{ width: '100px' }}
+									/>
+								</RatingContainer>
+							</PieCardWrapper>
+						</Grid>
+					))}
+				</Grid>
 			)}
 
 			{!loading && pies.length === 0 && (

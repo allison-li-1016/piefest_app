@@ -1,11 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery} = require('./sqlqueries.js');
+const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery, GetAllVotesForUserQuery } = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
+});
+
+router.get('/get-user-votes/:userid', async (req, res) => {
+    try { 
+        const votes = await ConnectAndQuery(GetAllVotesForUserQuery, new Map([
+            ['userId', req.params.userid]
+        ]));
+        res.json({
+            message: "User successfully retrieved 👨🏻‍🍳",
+            allVotes: votes
+        });
+    } catch (err) {
+        res.status(500).send(`Get User Votes failed: ${err.message}`);
+    }
 });
 
 router.post('/vote', async (req, res) => {
@@ -83,19 +97,20 @@ async function VoteForPie(pieId, vote, userId) {
 
 router.post('/bake-pie/:name', async (req, res) => {
     try { 
-        await BakePie(req.params.name);
+        await BakePie(req.params.name, req.body.image);
         res.send("You chefed up a pie 🥳");
     } catch (err) {
         res.status(500).send(`Pie entry failed: ${err.message}`);
     }
 });
 
-async function BakePie(name) {
+async function BakePie(name, base64ImageData) {
     if (!(typeof name === "string" && name.trim().length > 0 && name.length <= 100)) {
         throw new Error("Invalid pie name: must be a non-empty string within 100 characters.");
     }
     await ConnectAndQuery(BakePieQuery, new Map([
-        ['name', name]
+        ['name', name],
+        ['image', base64ImageData ? base64ImageData : null]
     ]));
 }
 
