@@ -44,7 +44,43 @@ const getPie = async (uid) => {
 }
 
 const updatePieRatings = async (userUid, ratings) => {
-    return true;
+    try {
+        const votePromises = Object.entries(ratings)
+        .filter(([_, vote]) => vote !== null && vote !== '')
+        .map(async ([pieId, vote]) => {
+            const body = {
+                "userId": userUid,
+                "pieId": parseInt(pieId),
+                "vote": parseFloat(vote)
+            };
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            };
+
+            const res = await fetch('/backend/vote', requestOptions);
+            
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error('Vote casting failed:', {
+                    pieId: pieId,
+                    status: res.status,
+                    statusText: res.statusText,
+                    errorMessage: errorText
+                });
+                throw new Error(`Vote casting failed for pie ${pieId}: ${errorText}`);
+            }
+            return true;
+        });
+
+        await Promise.all(votePromises);
+        return true;
+    } catch (error) {
+        console.error('Error in updatePieRatings:', error.message);
+        throw error;
+    }
 }
 
 const getRankings = async () => {
@@ -57,7 +93,6 @@ const getRankings = async () => {
         // Transform array into dictionary
         const resultsDict = resJson.results.reduce((acc, curr) => {
             acc[curr.PieId] = curr.AverageVote;
-            console.log(acc);
             return acc;
         }, {});
         return resultsDict;

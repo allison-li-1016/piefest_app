@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PieCard from './PieCard';
 import { getPieUids, updatePieRatings } from './Helpers/Helpers';
+import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 
 // MUI imports
@@ -96,8 +97,15 @@ function VoteInstance() {
 	// Handle submit function
 	const handleSubmit = async () => {
 		try {
-			await updatePieRatings(pies, ratings);
-			alert('Ratings submitted successfully!');
+
+			const userId = parseInt(Cookies.get('userId'),10);
+
+			if (!userId) {
+				throw new Error("User ID not found in cookies.");
+			}
+
+			await updatePieRatings(userId, ratings);
+
 		} catch (error) {
 			console.error("Error submitting ratings:", error);
 			alert('Failed to submit ratings.');
@@ -111,11 +119,19 @@ function VoteInstance() {
 	const handleSubmitWithAnimation = async () => {
 		setShowAnimation(true);
 		try {
-			await updatePieRatings(pies, ratings);
+
+			const userId = parseInt(Cookies.get('userId'),10);
+
+			if (!userId) {
+				throw new Error("User ID not found in cookies.");
+			}
+
+			await updatePieRatings(userId, ratings);
+
 			setTimeout(() => {
-				alert('Ratings submitted successfully!');
 				setShowAnimation(false);
 			}, 2000);
+
 		} catch (error) {
 			console.error("Error submitting ratings:", error);
 			alert('Failed to submit ratings.');

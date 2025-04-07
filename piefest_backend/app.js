@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery} = require('./sqlqueries.js');
+const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery} = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
@@ -10,12 +10,55 @@ router.get('/hello', async (req, res) => {
 
 router.post('/vote', async (req, res) => {
     try { 
-        await VoteForPie(req.body.pieId, req.body.vote, req.body.userId);
-        res.send("Vote casted successfully.");
+        const existingVote = await CheckForExistingVote(req.body.userId, req.body.pieId);
+        if (existingVote && existingVote.length > 0) {
+            await UpdateVote(req.body.userId, req.body.pieId, req.body.vote);
+            res.send("Vote casted successfully.");
+        } else {
+            await VoteForPie(req.body.pieId, req.body.vote, req.body.userId);
+            res.send("Vote casted successfully.");
+        }
     } catch (err) {
         res.status(500).send(`Vote cast failed: ${err.message}`);
     }
 });
+
+async function CheckForExistingVote(userId, pieId) {
+    if (!Number.isInteger(userId)) {
+        throw new Error("Invalid userId: must be an integer.");
+    }
+    if (!Number.isInteger(pieId)) {
+        throw new Error("Invalid pieId: must be an integer.");
+    }
+
+    const existingVote = await ConnectAndQuery(CheckForExistingVoteQuery, new Map([
+        ['userId', userId],
+        ['pieId', pieId]
+    ]));
+
+    return existingVote;
+}
+
+async function UpdateVote(userId, pieId, vote) {
+    if (!Number.isInteger(userId)) {
+        throw new Error("Invalid userId: must be an integer.");
+    }
+    if (!Number.isInteger(pieId)) {
+        throw new Error("Invalid pieId: must be an integer.");
+    }
+    if (vote % 1 !== 0) {
+        throw new Error("Invalid vote: must be a float.");
+    }
+    if (vote < 0 || vote > 10) {
+        throw new Error("Vote value must be between 0 and 10.");
+    }
+
+    await ConnectAndQuery(UpdateVoteQuery, new Map([
+        ['userId', userId],
+        ['pieId', pieId], 
+        ['vote', vote]
+    ]));
+}
 
 async function VoteForPie(pieId, vote, userId) {
     if (!Number.isInteger(userId)) {
