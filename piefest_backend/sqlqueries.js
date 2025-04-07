@@ -55,7 +55,7 @@ const UpdateVoteQuery =
 `UPDATE Votes SET Vote = @vote WHERE UserId = @userId AND PieId = @pieId;`
 
 const BakePieQuery = 
-`INSERT INTO Pies (PieName) VALUES (@name);`
+`INSERT INTO Pies (PieName, PieImage) VALUES (@name, @image);`
 
 const GetUserQuery = 
 `SELECT * FROM USERS where Username = @username;`

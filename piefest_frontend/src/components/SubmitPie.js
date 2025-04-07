@@ -34,6 +34,7 @@ function SubmitPie() {
 
         try {
             let formData = new FormData();
+            console.log('Submitting pie:', pieName);
             if (selectedImage) {
                 // Use Promise to handle the async FileReader operation
                 const base64Data = await new Promise((resolve, reject) => {
