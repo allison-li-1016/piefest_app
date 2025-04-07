@@ -170,7 +170,8 @@ router.post('/verify-user', async (req, res) => {
                 verificationResult: true,
                 message: "User is verified 👨🏻‍🍳",
                 username: verificationResultJson.Username, 
-                password: verificationResultJson.Password
+                password: verificationResultJson.Password,
+                userId: verificationResultJson.UserId
             });
         } else {
             res.status(401).send("User verification failed: Invalid credentials.");
