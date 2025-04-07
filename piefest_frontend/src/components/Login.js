@@ -75,6 +75,7 @@ function Login() {
                 // set cookie with 7 day expiry
                 Cookies.set('emailUsername', data.username, { expires: 7 });
                 Cookies.set('definitelyAnEncryptedPassword', data.password, { expires: 7 });
+                Cookies.set('userId', data.userId, { expires: 7 });
             }
             
             // force reload the page
