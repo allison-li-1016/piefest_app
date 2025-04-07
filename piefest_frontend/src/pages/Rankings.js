@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import PieCard from "../components/PieCard"
-import { getRankings, getPieUids } from "../components/Helpers/Helpers"
+import { getRankings, getPieUids, getAllPies } from "../components/Helpers/Helpers"
 import NavBar from "../components/NavBar"
 
 // MUI imports
@@ -61,8 +61,10 @@ function Rankings() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const uids = await getPieUids()
-				setPies(uids)
+				// const uids = await getPieUids()
+				// setPies(uids)
+				const allPies = await getAllPies() // TODO: Get ratings from pies from db
+				setPies(allPies)
 
 				// Initialize ratings object
 				getRankings().then((r) => {
@@ -119,7 +121,7 @@ function Rankings() {
 							<Grid item xs={12} sm={6} md={4} key={pie}>
 								<PieCardWrapper elevation={2}>
 									<Box sx={{ position: "relative" }}>
-										<PieCard uid={pie} />
+										<PieCard name={pie.name} description={''} image={pie.image} />
 
 										{/* Top ranking badges */}
 										{index < 3 && (

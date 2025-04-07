@@ -24,6 +24,8 @@ function CreatePie() {
     const [pieName, setPieName] = useState('');
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -31,7 +33,20 @@ function CreatePie() {
         setSuccess(false);
 
         try {
-            let res = await fetch(`/backend/bake-pie/${pieName}`, {method: 'POST'});
+            let formData = new FormData();
+            if (selectedImage) {
+                // Use Promise to handle the async FileReader operation
+                const base64Data = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(selectedImage);
+                });
+                
+                formData.append('image', base64Data);
+            }
+
+            let res = await fetch(`/backend/bake-pie/${pieName}`, {method: 'POST', body: formData});
             if (res.status != 200) {
                 setError(`Failed to submit pie with error code ${res.status}. Please try again.`);
             } else {
@@ -50,7 +65,7 @@ function CreatePie() {
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
                     Submit Your Pie
                 </Typography>
-                
+
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <TextField
                         fullWidth
@@ -61,6 +76,59 @@ function CreatePie() {
                         margin="normal"
                         variant="outlined"
                     />
+
+                    {/* Image Upload */}
+                    <Box sx={{ mt: 3, mb: 2 }}>
+                        <Typography variant="subtitle1" gutterBottom>
+                            Upload an image of your pie (camera only!):
+                        </Typography>
+                        <input
+                            accept="image/jpg, image/jpeg"
+                            style={{ display: 'none' }}
+                            id="contained-button-file"
+                            type="file"
+                            onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                    const file = e.target.files[0];
+                                    setSelectedImage(file);
+                                    
+                                    // Create a preview
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => setImagePreview(e.target.result);
+                                    reader.readAsDataURL(file);
+                                }
+                            }}
+                        />
+                        <label htmlFor="contained-button-file">
+                            <Button
+                                variant="outlined"
+                                component="span"
+                                sx={{ mr: 2 }}
+                            >
+                                Select Image
+                            </Button>
+                        </label>
+                        {selectedImage && (
+                            <Typography variant="body2" component="span">
+                                {selectedImage.name}
+                            </Typography>
+                        )}
+                        
+                        {/* Image Preview */}
+                        {imagePreview && (
+                            <Box sx={{ mt: 2, textAlign: 'center' }}>
+                                <img 
+                                    src={imagePreview} 
+                                    alt="Pie preview" 
+                                    style={{
+                                        maxWidth: '100%',
+                                        maxHeight: '300px',
+                                        objectFit: 'contain'
+                                    }}
+                                />
+                            </Box>
+                        )}
+                    </Box>
 
                     <Button 
                         type="submit"

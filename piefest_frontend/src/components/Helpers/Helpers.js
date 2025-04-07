@@ -29,6 +29,21 @@ const getPie = async (uid) => {
     }
 }
 
+const getAllPies = async () => {
+    try {
+        let res = await fetch('/backend/get-all-pies');
+        if (res.status != 200) {
+            throw new Error(`Failed to get all pies with error code ${res.status}. Please try again.`);
+        }
+        let resJson = await res.json();
+        return resJson.pies.map((pie) => {
+            return {"id": pie.PieId, "name": pie.PieName, "image": pie.PieImage}
+        })
+    } catch (err) {
+        throw new Error(`Failed to get all pies. Please try again. Error: ${err.message}`);
+    }
+}
+
 const updatePieRatings = async (userUid, ratings) => {
     return true;
 }
@@ -42,4 +57,4 @@ const getRankings = async () => {
     return ratings;
 }
 
-export { getPieUids, getPie, updatePieRatings, getRankings };
+export { getPieUids, getPie, getAllPies, updatePieRatings, getRankings };
