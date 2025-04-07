@@ -106,8 +106,6 @@ function VoteInstance() {
 
 			await updatePieRatings(userId, ratings);
 
-			alert('Ratings submitted successfully!');
-
 		} catch (error) {
 			console.error("Error submitting ratings:", error);
 			alert('Failed to submit ratings.');
@@ -131,7 +129,6 @@ function VoteInstance() {
 			await updatePieRatings(userId, ratings);
 
 			setTimeout(() => {
-				alert('Ratings submitted successfully!');
 				setShowAnimation(false);
 			}, 2000);
 
