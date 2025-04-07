@@ -144,42 +144,50 @@ function VoteInstance() {
 	return (
 		<div>
 		<Container maxWidth="lg" sx={{ py: 2 }}>
-			{/* Sticky header */}
-			<Box sx={{ 
-				position: 'sticky', 
-				top: 0, 
-				zIndex: 10, 
-				backgroundColor: 'background.paper',
-				pb: 1,
-				pt: 1,
+			{/* Fixed Header */}
+			<Box 
+			sx={{ 
+				position: 'fixed', 
+				bottom: 0,
+				left: 0,
+				right: 0,
+				zIndex: 1100,
+				backgroundColor: 'rgba(128, 128, 128, 0.6)', // Translucent white
+    			backdropFilter: 'blur(8px)', // Adds blur effect
+				py: 2,  // Equal padding top and bottom
+				px: 3,
+				borderTop: 1,  // Change from borderBottom to borderTop
+				borderColor: 'divider',
 				display: 'flex',
 				justifyContent: 'space-between',
 				alignItems: 'center',
-				marginRight: 2
-			}}>
-				<Box>
-					<Typography variant="h5" component="h3" sx={{ fontWeight: "bold" }}>
-						Vote for Pies
-					</Typography>
-				</Box>
-				
-				<Box sx={{ position: 'relative' }}>
-					<Button 
-						variant="contained" 
-						color="success"
-						onClick={handleSubmitWithAnimation}
-						sx={{ 
-							py: 1, 
-							px: 2,
-							fontWeight: 'bold',
-							boxShadow: 3,
-							'&:hover': {
-								boxShadow: 6,
-							}
-						}}
-					>
-						SUBMIT RATINGS
-					</Button>
+				boxShadow: '0px -2px 4px rgba(0,0,0,0.1)',
+				height: '64px', 
+    }}>
+
+        <Box>
+            <Typography variant="h5" component="h3" sx={{ fontWeight: "normal" }}>
+                Vote for Pies
+            </Typography>
+        </Box>
+        
+        <Box sx={{ position: 'relative' }}>
+            <Button 
+                variant="contained" 
+                color="success"
+                onClick={handleSubmitWithAnimation}
+                sx={{ 
+                    py: 1, 
+                    px: 2,
+                    fontWeight: 'bold',
+                    boxShadow: 3,
+                    '&:hover': {
+                        boxShadow: 6,
+                    }
+                }}
+            >
+                SUBMIT RATINGS
+            </Button>
 					{showAnimation && (
 						<>
 							{
@@ -219,14 +227,15 @@ function VoteInstance() {
 					)}
 				</Box>
 			</Box>
-			
-			<Divider sx={{ mt: 1, mb: 2 }} />
+
+			{/* <Box sx={{ height: '120px' , mb: 4 }} /> */}
 
 			{loading ? (
 				<LoadingContainer>
 					<CircularProgress />
 				</LoadingContainer>
 			) : (
+				<>
 				<Grid container spacing={2}>
 					{pies.map(pie => (
 						<Grid item xs={12} sm={6} md={4} key={pie}>
@@ -257,6 +266,8 @@ function VoteInstance() {
 						</Grid>
 					))}
 				</Grid>
+				<Box sx={{ height: '100px', mb: 2 }} />
+				</>
 			)}
 
 			{!loading && pies.length === 0 && (
