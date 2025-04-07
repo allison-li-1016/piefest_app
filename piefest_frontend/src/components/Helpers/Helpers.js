@@ -93,7 +93,6 @@ const getRankings = async () => {
         // Transform array into dictionary
         const resultsDict = resJson.results.reduce((acc, curr) => {
             acc[curr.PieId] = curr.AverageVote;
-            console.log(acc);
             return acc;
         }, {});
         return resultsDict;

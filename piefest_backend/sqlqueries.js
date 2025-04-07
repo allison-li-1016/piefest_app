@@ -47,6 +47,12 @@ SELECT * FROM Pies;
 const VoteForPieQuery = 
 `INSERT INTO Votes (UserId, PieId, Vote) VALUES (@userId, @pieId, @vote);`
 
+const CheckForExistingVoteQuery = 
+`SELECT * FROM Votes WHERE UserId = @userId AND PieId = @pieId;`
+
+const UpdateVoteQuery = 
+`UPDATE Votes SET Vote = @vote WHERE UserId = @userId AND PieId = @pieId;`
+
 const BakePieQuery = 
 `INSERT INTO Pies (PieName) VALUES (@name);`
 
@@ -82,5 +88,7 @@ module.exports = {
     AddUserQuery,
     GetPieQuery,
     GetVotesQuery,
-    GetUserQuery
+    GetUserQuery,
+    CheckForExistingVoteQuery,
+    UpdateVoteQuery
 }
