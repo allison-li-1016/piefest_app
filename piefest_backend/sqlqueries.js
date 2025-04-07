@@ -23,9 +23,10 @@ AND Password = @pass;
 `
 const CreatePieTableQuery =
 `
-Create TABLE Pies (
+CREATE TABLE Pies (
     PieId INT IDENTITY(1,1) PRIMARY KEY,
-    PieName VARCHAR(100) NOT NULL
+    PieName VARCHAR(100) NOT NULL,
+    PieImage VARCHAR(MAX) NULL
 );
 `
 const CreateVotesTableQuery =
@@ -57,7 +58,7 @@ const UpdateVoteQuery =
 `UPDATE Votes SET Vote = @vote WHERE UserId = @userId AND PieId = @pieId;`
 
 const BakePieQuery = 
-`INSERT INTO Pies (PieName) VALUES (@name);`
+`INSERT INTO Pies (PieName, PieImage) VALUES (@name, @image);`
 
 const GetUserQuery = 
 `SELECT * FROM USERS where Username = @username;`

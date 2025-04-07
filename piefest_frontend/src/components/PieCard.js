@@ -29,7 +29,7 @@ const PieImage = styled(CardMedia)(({ theme }) => ({
     },
 }));
 
-const PieCard = ({ uid }) => {
+const PieCard = ({ name, description, image }) => {
     const [pie, setPie] = useState({
         name: '',
         description: '',
@@ -39,24 +39,21 @@ const PieCard = ({ uid }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchPieData = async () => {
-            try {
-                setLoading(true);
-                const response = await getPie(uid);
-                setPie(response.data || response);
-                setError(null);
-            } catch (err) {
-                console.error('Error fetching pie data:', err);
-                setError('Failed to load pie information');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (uid) {
-            fetchPieData();
-        }
-    }, [uid]);
+        // Process image if it's a base64 string without data URL prefix
+        const imageUrl = image 
+            ? (image.startsWith('data:') 
+                ? image 
+                : `data:image/jpeg;base64,${image}`)
+            : GARMFIELD_IMG;
+            
+        setPie({
+            name: name || 'Unknown Pie',
+            description: description || 'No description available',
+            image: imageUrl
+        });
+        
+        setLoading(false);
+    }, [name, description, image]);
 
     if (loading) return (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
