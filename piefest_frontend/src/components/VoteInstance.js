@@ -235,6 +235,7 @@ function VoteInstance() {
 					<CircularProgress />
 				</LoadingContainer>
 			) : (
+				<>
 				<Grid container spacing={2}>
 					{pies.map(pie => (
 						<Grid item xs={12} sm={6} md={4} key={pie}>
@@ -265,6 +266,8 @@ function VoteInstance() {
 						</Grid>
 					))}
 				</Grid>
+				<Box sx={{ height: '100px', mb: 2 }} />
+				</>
 			)}
 
 			{!loading && pies.length === 0 && (
