@@ -37,7 +37,7 @@ function Login() {
 
             if (!response.ok) throw new Error('Registration failed');
             
-            setSuccess('Email Sent to ' + registerEmail + '! Check for your password and login here :)');
+            setSuccess('Email Sent to ' + registerEmail + '! Check for your password and login there :)');
             setRegisterEmail('');
         } catch (err) {
             setError(err.message);
@@ -50,30 +50,34 @@ function Login() {
         setSuccess('');
 
         try {
-            // TODO: Implement function to send email and password and update UI
-            const response = false;
-            // const response = await fetch('/api/login', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ 
-            //         email: loginEmail, 
-            //         password: loginPassword 
-            //     })
-            // });
+            console.log('Login attempt with:', loginEmail, loginPassword);
+            const response = await fetch('/backend/verify-user', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    username: loginEmail, 
+                    password: loginPassword 
+                })
+            });
 
-            if (!response.ok) throw new Error('API call failed');
+            if (response.status / 100 !== 2) {
+                setError(response.statusText);
+                return;
+            }
 
             const data = await response.json();
             
-            if (!data.validationSuccess) throw new Error('Account and password do not match');
+            if (!data.verificationResult) {
+                throw new error(data.message);
+            } else {
+                // set cookie with 7 day expiry
+                Cookies.set('emailUsername', data.username, { expires: 7 });
+                Cookies.set('definitelyAnEncryptedPassword', data.password, { expires: 7 });
+            }
             
-            // Set cookie with 7 day expiry
-            Cookies.set('emailUsername', loginEmail, { expires: 7 });
-            Cookies.set('definitelyAnEncryptedPassword', loginPassword, { expires: 7 });
-            
-            // Force reload the page
+            // force reload the page
             window.location.reload();
         } catch (err) {
             setError(err.message);

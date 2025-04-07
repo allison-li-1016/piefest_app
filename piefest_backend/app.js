@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery} = require('./sqlqueries.js');
+const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery} = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
@@ -79,8 +79,6 @@ async function AddUser(username) {
         ['username', username]
     ]));
 
-    console.log("Existing user: ", existingUser);
-
     var password;
 
     if (existingUser === undefined) {
@@ -119,6 +117,40 @@ async function AddUser(username) {
     }
 
     return username;
+}
+
+router.post('/verify-user', async (req, res) => {
+    try { 
+        const verificationResultJson = await VerifyUser(req.body.username, req.body.password);
+        if (verificationResultJson) {
+            res.json({
+                verificationResult: true,
+                message: "User is verified 👨🏻‍🍳",
+                username: verificationResultJson.Username, 
+                password: verificationResultJson.Password
+            });
+        } else {
+            res.status(401).send("User verification failed: Invalid credentials.");
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(`User verification failed: ${err}`);
+    }
+});
+
+async function VerifyUser(username, password) {
+    const user = await ConnectAndQuery(VerifyUserQuery, new Map([
+        ['username', username],
+        ['password', password]
+    ]));
+
+    if (user === undefined) {
+        throw new Error("API call is messed up.");
+    } else if (user.length === 0) {
+        return undefined; // User does not exist
+    } else {
+        return user[0]; // User exists
+    }
 }
 
 router.get('/get-all-pies', async (req, res) => {
