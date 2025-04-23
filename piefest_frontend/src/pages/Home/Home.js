@@ -182,11 +182,20 @@ function Home() {
                     <Grid container spacing={3} sx={{ mt: 2 }}>
                         <Grid item xs={12} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Avatar 
-                                    sx={{ width: 60, height: 60, mr: 2, bgcolor: 'primary.main' }}
-                                >
-                                    AL
-                                </Avatar>
+                                <Box
+                                            component="img"
+                                            src="/images/default.jpg" // Path to your image
+                                            alt="Tansy Huang"
+                                            sx={{
+                                                width: 80,
+                                                height: 80,
+                                                mr: 2,
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '2px solid',
+                                                borderColor: 'secondary.main',
+                                            }}
+                                        />
                                 <Box>
                                     <Typography variant="h6">Tansy Huang</Typography>
                                     <Typography variant="body2" color="text.secondary">Designer, Event Scheduling</Typography>
@@ -199,11 +208,20 @@ function Home() {
                         
                         <Grid item xs={12} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Avatar 
-                                    sx={{ width: 60, height: 60, mr: 2, bgcolor: 'secondary.main' }}
-                                >
-                                    RJ
-                                </Avatar>
+                                <Box
+                                            component="img"
+                                            src="/images/default.jpg" // Path to your image
+                                            alt="Arielle Perreault"
+                                            sx={{
+                                                width: 80,
+                                                height: 80,
+                                                mr: 2,
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '2px solid',
+                                                borderColor: 'secondary.main',
+                                            }}
+                                        />
                                 <Box>
                                     <Typography variant="h6">Arielle Perreault</Typography>
                                     <Typography variant="body2" color="text.secondary">Event Planning</Typography>
@@ -228,11 +246,20 @@ function Home() {
                     <Grid container spacing={3} sx={{ mt: 2 }}>
                         <Grid item xs={12} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Avatar 
-                                    sx={{ width: 60, height: 60, mr: 2, bgcolor: 'primary.main' }}
-                                >
-                                    AL
-                                </Avatar>
+                                <Box
+                                            component="img"
+                                            src="/images/default.jpg" // Path to your image
+                                            alt="Benjamin Brusniak"
+                                            sx={{
+                                                width: 80,
+                                                height: 80,
+                                                mr: 2,
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '2px solid',
+                                                borderColor: 'secondary.main',
+                                            }}
+                                        />
                                 <Box>
                                     <Typography variant="h6">Benjamin Brusniak</Typography>
                                     <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
@@ -271,11 +298,20 @@ function Home() {
 
                         <Grid item xs={12} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Avatar 
-                                    sx={{ width: 60, height: 60, mr: 2, bgcolor: 'primary.main' }}
-                                >
-                                    AL
-                                </Avatar>
+                                <Box
+                                        component="img"
+                                        src="/images/default.jpg" // Path to your image
+                                        alt="Nicholas Lumiere"
+                                        sx={{
+                                            width: 80,
+                                            height: 80,
+                                            mr: 2,
+                                            borderRadius: '50%',
+                                            objectFit: 'cover',
+                                            border: '2px solid',
+                                            borderColor: 'secondary.main',
+                                        }}
+                                    />
                                 <Box>
                                     <Typography variant="h6">Nicholas Lumiere</Typography>
                                     <Typography variant="body2" color="text.secondary">Front End Developer</Typography>
@@ -288,11 +324,20 @@ function Home() {
 
                         <Grid item xs={12} sm={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Avatar 
-                                    sx={{ width: 60, height: 60, mr: 2, bgcolor: 'primary.main' }}
-                                >
-                                    AL
-                                </Avatar>
+                                <Box
+                                            component="img"
+                                            src="/images/default.jpg" // Path to your image
+                                            alt="Nicco Garofalo"
+                                            sx={{
+                                                width: 80,
+                                                height: 80,
+                                                mr: 2,
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '2px solid',
+                                                borderColor: 'secondary.main',
+                                            }}
+                                        />
                                 <Box>
                                     <Typography variant="h6">Nicco Garofalo</Typography>
                                     <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
