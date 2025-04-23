@@ -192,8 +192,7 @@ function VoteInstance() {
 						<>
 							{
 							[...Array(6)].map((_, i) => {
-								// Generate angle between 180 (left) and 270 (down) degrees
-								const angle = 90 + Math.random() * 90;
+								const angle = Math.random() * 360;
 								return (
 									<Box
 										key={i}
