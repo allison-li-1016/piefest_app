@@ -292,7 +292,7 @@ function Home() {
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite pie: Strawberry pie 🍓. 
+                                Favorite pie: Strawberry Pie 🍓. 
                             </Typography>
                         </Grid>
 
@@ -344,7 +344,7 @@ function Home() {
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite Pie: Ariel’s 2023 Key Lime Pie which won 2nd 🥈 place at the inaugural Piefest.
+                                Favorite Pie: Arielle’s 2023 Key Lime Pie which won 2nd 🥈 place at the inaugural Piefest.
                             </Typography>
                         </Grid>
 
