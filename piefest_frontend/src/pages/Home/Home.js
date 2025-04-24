@@ -248,7 +248,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                             component="img"
-                                            src="/images/default.jpg" // Path to your image
+                                            src="/images/benjamin.jpeg" // Path to your image
                                             alt="Benjamin Brusniak"
                                             sx={{
                                                 width: 80,
@@ -274,7 +274,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                     component="img"
-                                    src="/images/Allison.jpg" // Path to your image
+                                    src="/images/allison.jpeg" // Path to your image
                                     alt="Allison Li"
                                     sx={{
                                         width: 80,
