@@ -99,7 +99,7 @@ async function VoteForPie(pieId, vote, userId) {
 router.post('/bake-pie/:name', async (req, res) => {
     try { 
         var pieId = await BakePie(req.params.name, req.body.image);
-        console.log(pieId);
+        //console.log(pieId);
         res.json({ "pieId": pieId });
     } catch (err) {
         res.status(500).send(`Pie entry failed: ${err.message}`);
@@ -287,7 +287,6 @@ async function GetResults(limit) {
 
 router.post('/add-image/:pieId/filename/:filename', async (req, res) => {
     try { 
-        console.log("HELLLLOOOOOOOOOO")
         var pieId = req.params.pieId;
         var filename = req.params.filename;
         var blobName = `blob${pieId}.${filename}`;
@@ -303,7 +302,7 @@ router.post('/add-image/:pieId/filename/:filename', async (req, res) => {
             imageUrl: imageUrl
         }
 
-        console.log(resp)
+        //console.log(resp)
 
         res.json(resp);
     } catch (err) {
@@ -317,16 +316,15 @@ router.post('/add-image/:pieId/filename/:filename', async (req, res) => {
 
 async function generateSasUrl(blobName) {
     // TODO: these need to be an env variable
-    const accountName = "";
-    const accountKey = ""; 
+    const accountName = process.env.STORAGE_ACCOUNT_NAME;
+    const accountKey = process.env.STORAGE_ACCOUNT_KEY; 
     const credential = new StorageSharedKeyCredential(accountName, accountKey);
     const containerName = "piefestdevimages";
-    //const blobName = blobName; 
     const sasToken = generateBlobSASQueryParameters({
         containerName,
         blobName,
         permissions: BlobSASPermissions.parse("rcw"), 
-        startsOn: new Date(),
+        startsOn: new Date(new Date().valueOf() - 3600 * 1000),
         expiresOn: new Date(new Date().valueOf() + 86400 * 1000), // 24 hours from now
     }, credential).toString();
     const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
