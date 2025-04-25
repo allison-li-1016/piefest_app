@@ -291,7 +291,9 @@ router.post('/add-image/:pieId/filename/:filename', async (req, res) => {
         var filename = req.params.filename;
         var blobName = `blob${pieId}.${filename}`;
         var imageUrl = await generateSasUrl(blobName);
-        var storeImageUrl = `https://piefestdevstorage.blob.core.windows.net/piefestdevimages/${blobName}`;
+        const accountName = process.env.STORAGE_ACCOUNT_NAME;
+        const containerName = process.env.STORAGE_CONTAINER_NAME;
+        var storeImageUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}`;
         await ConnectAndQuery(AddPieImage, new Map([
             ['pieId', pieId],
             ['image', storeImageUrl]
@@ -319,7 +321,7 @@ async function generateSasUrl(blobName) {
     const accountName = process.env.STORAGE_ACCOUNT_NAME;
     const accountKey = process.env.STORAGE_ACCOUNT_KEY; 
     const credential = new StorageSharedKeyCredential(accountName, accountKey);
-    const containerName = "piefestdevimages";
+    const containerName = process.env.STORAGE_CONTAINER_NAME;
     const sasToken = generateBlobSASQueryParameters({
         containerName,
         blobName,
