@@ -97,20 +97,27 @@ async function VoteForPie(pieId, vote, userId) {
 
 router.post('/bake-pie/:name', async (req, res) => {
     try { 
-        await BakePie(req.params.name, req.body.image);
-        res.send("You chefed up a pie 🥳");
+        var pieId = await BakePie(req.params.name, req.body.image, req.body.userId);
+        console.log(pieId);
+        res.json({ 
+            "pieId": pieId,
+            "userId": req.body.userId,
+            "pieName": req.params.name
+
+         });
     } catch (err) {
         res.status(500).send(`Pie entry failed: ${err.message}`);
     }
 });
 
-async function BakePie(name, base64ImageData) {
+async function BakePie(name, base64ImageData, userId) {
     if (!(typeof name === "string" && name.trim().length > 0 && name.length <= 100)) {
         throw new Error("Invalid pie name: must be a non-empty string within 100 characters.");
     }
     await ConnectAndQuery(BakePieQuery, new Map([
         ['name', name],
-        ['image', base64ImageData ? base64ImageData : null]
+        ['image', base64ImageData ? base64ImageData : null],
+        ['userId', userId]
     ]));
 }
 

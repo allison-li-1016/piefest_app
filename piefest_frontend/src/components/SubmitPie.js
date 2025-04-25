@@ -27,6 +27,14 @@ function SubmitPie() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
 
+
+    useEffect(() => {
+        const userIdFromCookie = Cookies.get('userId');
+        if (userIdFromCookie) {
+            setUserId(userIdFromCookie);
+        }
+    }, []);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
@@ -35,6 +43,20 @@ function SubmitPie() {
         try {
             let formData = new FormData();
             console.log('Submitting pie:', pieName);
+            let bakePieRes = await fetch(`/backend/bake-pie/${pieName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userId })
+            });
+            if (bakePieRes.status != 200) {
+                setError(`Failed to submit pie with error code ${bakePieRes.status}. Please try again.`);
+                return;
+            }
+            console.log('Pie submitted subcessfully');
+            let bakePieResJson = await bakePieRes.json();
+            console.log(bakePieResJson);
             if (selectedImage) {
                 // Use Promise to handle the async FileReader operation
                 const base64Data = await new Promise((resolve, reject) => {
