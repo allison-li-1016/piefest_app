@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import NavBar from '../components/NavBar';
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 import { 
     Container, 
@@ -22,6 +22,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 function SubmitPie() {
     const [pieName, setPieName] = useState('');
+    const [userId, setUserId] = useState('');
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
