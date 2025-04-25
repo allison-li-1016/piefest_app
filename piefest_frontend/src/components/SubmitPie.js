@@ -35,24 +35,63 @@ function SubmitPie() {
         try {
             let formData = new FormData();
             console.log('Submitting pie:', pieName);
+            let bakePieRes = await fetch(`/backend/bake-pie/${pieName}`, {method: 'POST'});
+            if (bakePieRes.status != 200) {
+                setError(`Failed to submit pie with error code ${bakePieRes.status}. Please try again.`);
+                return;
+            }
+            console.log('Pie submitted subcessfully');
+            let bakePieResJson = await bakePieRes.json();
+            console.log(bakePieResJson);
             if (selectedImage) {
                 // Use Promise to handle the async FileReader operation
-                const base64Data = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result.split(',')[1]);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(selectedImage);
+                // const base64Data = await new Promise((resolve, reject) => {
+                //     const reader = new FileReader();
+                //     reader.onload = () => resolve(reader.result.split(',')[1]);
+                //     reader.onerror = reject;
+                //     reader.readAsDataURL(selectedImage);
+                // });
+                console.log("Selected image:", selectedImage);
+                console.log("Adding Image");
+                var url = `/backend/add-image/${bakePieResJson.pieId}/filename/${selectedImage.name}`;
+                console.log(url);
+                let res = await fetch(url, { method: 'POST' } );
+                console.log(res);
+                if (!res.ok) {
+                    setError(`Failed to submit pie image with error code ${res.status}. Please try again.`);
+                    return
+                }
+
+                console.log("Bacend call successfull")
+                let resJson = await res.json();
+                console.log(resJson);
+                let sasUrl = resJson.imageUrl
+                console.log("SAS URL:", sasUrl);
+
+                // Step 3: Upload the image directly to the SAS URL
+                const uploadResponse = await fetch(sasUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'x-ms-blob-type': 'BlockBlob',
+                        'Content-Type': selectedImage.type,
+                    },
+                    body: selectedImage,  // Send the raw file
                 });
                 
-                formData.append('image', base64Data);
-            }
+                if (!uploadResponse.ok) {
+                    setError(`Failed to upload image with status ${uploadResponse.status}. Please try again.`);
+                    return;
+                }
+                
+                // formData.append('image', base64Data);
+                
+                // Get SAS URL
 
-            let res = await fetch(`/backend/bake-pie/${pieName}`, {method: 'POST', body: formData});
-            if (res.status != 200) {
-                setError(`Failed to submit pie with error code ${res.status}. Please try again.`);
-            } else {
-                setSuccess(true);
+                // Upload to SAS URL
             }
+            setSuccess(true);
+
+
         } catch (err) {
             setError(`Failed to submit pie. Please try again. Error: ${err.message}`);
         }
