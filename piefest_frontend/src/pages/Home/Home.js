@@ -36,7 +36,7 @@ function Home() {
         <Container maxWidth="md">
             <Box sx={{ py: 4 }}>
                 <Typography variant="h2" component="h1" gutterBottom align="center">
-                    Welcome to Piefest!
+                    Welcome to PieFest!
                 </Typography>
 
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
@@ -67,7 +67,7 @@ function Home() {
 
                 <Paper sx={{ p: 3, mb: 4 }}>
                     <Typography variant="h4" gutterBottom>
-                        About Piefest
+                        About PieFest
                     </Typography>
                     <Box 
                         sx={{ 
@@ -191,7 +191,7 @@ function Home() {
                     </Typography>
 
                     <Typography variant="body1" paragraph>
-                        Honestly the glue holding piefest together!
+                        Honestly the glue holding PieFest together!
                     </Typography>
 
                     <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -255,7 +255,7 @@ function Home() {
                     </Typography>
                     
                     <Typography variant="body1" paragraph>
-                        Piefest's app was created by a team of passionate developers who love both code and pie!
+                        PieFest's app was created by a team of passionate developers who love both code and pie!
                     </Typography>
                     
                     <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -504,7 +504,7 @@ function Home() {
 
                 <Box sx={{ mt: 4, textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary">
-                        © 2025 Piefest. All rights reserved.
+                        © 2025 PieFest. All rights reserved.
                     </Typography>
                 </Box>
             </Box>
