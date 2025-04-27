@@ -10,7 +10,7 @@ You will need node/npm. On mac run `brew install node`. You will also need [make
 make install
 ```
 
-## Build service (required for backend updates)
+## Build service (required for frontent updates)
 ```bash
 make build
 ```
@@ -20,7 +20,7 @@ make build
 make run
 ```
 
-For backend changes run
+For frontent changes run
 ```bash
 make run_with_build
 ```
