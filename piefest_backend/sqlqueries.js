@@ -58,7 +58,7 @@ const UpdateVoteQuery =
 `UPDATE Votes SET Vote = @vote WHERE UserId = @userId AND PieId = @pieId;`
 
 const BakePieQuery = 
-`INSERT INTO Pies (PieName, PieImage) VALUES (@name, @image);`
+`INSERT INTO Pies (PieName, PieImage) VALUES (@name, @image); SELECT SCOPE_IDENTITY() AS pieId;`
 
 const GetUserQuery = 
 `SELECT * FROM USERS where Username = @username;`
@@ -72,6 +72,9 @@ const AddUserQuery =
 const GetPieQuery = 
 `SELECT * FROM Pies WHERE PieId = @pieId;` 
 
+const AddPieImage = 
+`UPDATE Pies SET PieImage = @image WHERE PieId = @pieId;`
+
 const GetVotesQuery = 
 `SELECT TOP (@limit)
     PieId,
@@ -84,6 +87,7 @@ ORDER BY
     AverageVote DESC;`
 
 module.exports = {
+    AddPieImage,
     CreateUserTableQuery,
     CreateAdminTableQuery,
     CreatePieTableQuery,

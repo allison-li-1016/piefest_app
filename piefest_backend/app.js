@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery, GetAllVotesForUserQuery } = require('./sqlqueries.js');
+const { AddPieImage, VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery, GetAllVotesForUserQuery } = require('./sqlqueries.js');
+const { generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } = require('@azure/storage-blob');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
@@ -97,8 +98,9 @@ async function VoteForPie(pieId, vote, userId) {
 
 router.post('/bake-pie/:name', async (req, res) => {
     try { 
-        await BakePie(req.params.name, req.body.image);
-        res.send("You chefed up a pie 🥳");
+        var pieId = await BakePie(req.params.name, req.body.image);
+        //console.log(pieId);
+        res.json({ "pieId": pieId });
     } catch (err) {
         res.status(500).send(`Pie entry failed: ${err.message}`);
     }
@@ -108,10 +110,11 @@ async function BakePie(name, base64ImageData) {
     if (!(typeof name === "string" && name.trim().length > 0 && name.length <= 100)) {
         throw new Error("Invalid pie name: must be a non-empty string within 100 characters.");
     }
-    await ConnectAndQuery(BakePieQuery, new Map([
+    let res = await ConnectAndQuery(BakePieQuery, new Map([
         ['name', name],
         ['image', base64ImageData ? base64ImageData : null]
     ]));
+    return res[0].pieId;
 }
 
 router.post('/add-user', async (req, res) => {
@@ -280,6 +283,55 @@ async function GetResults(limit) {
         ['limit', limit]
     ]));
     return votes;
+}
+
+router.post('/add-image/:pieId/filename/:filename', async (req, res) => {
+    try { 
+        var pieId = req.params.pieId;
+        var filename = req.params.filename;
+        var blobName = `blob${pieId}.${filename}`;
+        var imageUrl = await generateSasUrl(blobName);
+        const accountName = process.env.STORAGE_ACCOUNT_NAME;
+        const containerName = process.env.STORAGE_CONTAINER_NAME;
+        var storeImageUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}`;
+        await ConnectAndQuery(AddPieImage, new Map([
+            ['pieId', pieId],
+            ['image', storeImageUrl]
+        ]));
+
+        var resp = {
+            message: "Image successfully added 🎨",
+            imageUrl: imageUrl
+        }
+
+        //console.log(resp)
+
+        res.json(resp);
+    } catch (err) {
+        res.status(500).send(`Add image failed: ${err.message}`);
+    }
+})
+
+//function for generating URL extension
+
+//function for generating SAS token 
+
+async function generateSasUrl(blobName) {
+    // TODO: these need to be an env variable
+    const accountName = process.env.STORAGE_ACCOUNT_NAME;
+    const accountKey = process.env.STORAGE_ACCOUNT_KEY; 
+    const credential = new StorageSharedKeyCredential(accountName, accountKey);
+    const containerName = process.env.STORAGE_CONTAINER_NAME;
+    const sasToken = generateBlobSASQueryParameters({
+        containerName,
+        blobName,
+        permissions: BlobSASPermissions.parse("rcw"), 
+        startsOn: new Date(new Date().valueOf() - 3600 * 1000),
+        expiresOn: new Date(new Date().valueOf() + 86400 * 1000), // 24 hours from now
+    }, credential).toString();
+    const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+
+    return sasUrl;
 }
 
 module.exports = router;
