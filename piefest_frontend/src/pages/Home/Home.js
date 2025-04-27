@@ -126,7 +126,22 @@ function Home() {
                                     <Typography variant="h5" component="p" sx={{ fontWeight: 'medium', color: '#2351a3' }}> {/* Changed to blue */}
                                         Rooster Apartments 
                                     </Typography>
-                                    <Typography variant="body1" component="p" sx={{ fontWeight: 'medium', color: '#2351a3' }}> {/* Changed to blue */}
+                                    <Typography 
+                                        variant="body1" 
+                                        component="p" 
+                                        sx={{ 
+                                            fontWeight: 'medium', 
+                                            color: '#2351a3',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            '&:hover': {
+                                                textDecoration: 'underline',
+                                                cursor: 'pointer'
+                                            }
+                                        }}
+                                        onClick={() => window.open('https://maps.google.com/?q=839+NE+66th+Street,+Seattle,+WA', '_blank')}
+                                    > 
+                                        <Box component="span" sx={{ mr: 0.5 }}>🗺️</Box>
                                         839 NE 66th Street
                                     </Typography>
                                     <Typography variant="body2" sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, color: '#2351a3' }}> {/* Changed to blue */}
