@@ -10,4 +10,4 @@ run:
 	cd piefest_backend; \
 	npm start
 
-run_with_build: run build
+run_with_build: build run
