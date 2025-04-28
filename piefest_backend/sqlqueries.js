@@ -98,6 +98,9 @@ const AddUserQuery =
 const GetPieQuery = 
 `SELECT * FROM Pies WHERE PieId = @pieId;` 
 
+const AddPieImage = 
+`UPDATE Pies SET PieImage = @image WHERE PieId = @pieId;`
+
 const GetVotesQuery = 
 `SELECT TOP (@limit)
     PieId,
@@ -110,6 +113,7 @@ ORDER BY
     AverageVote DESC;`
 
 module.exports = {
+    AddPieImage,
     CreateUserTableQuery,
     CreateAdminTableQuery,
     CreatePieTableQuery,

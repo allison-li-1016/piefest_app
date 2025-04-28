@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/allison-li-1016/piefest_app#readme",
   "dependencies": {
+    "@azure/storage-blob": "^12.27.0",
     "@propeldata/react-leaderboard": "^0.5.4",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

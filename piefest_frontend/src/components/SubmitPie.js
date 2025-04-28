@@ -22,25 +22,15 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 function SubmitPie() {
     const [pieName, setPieName] = useState('');
-    const [userId, setUserId] = useState('');
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
 
-
-    useEffect(() => {
-        const userIdFromCookie = Cookies.get('userId');
-        if (userIdFromCookie) {
-            setUserId(userIdFromCookie);
-        }
-    }, []);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         setSuccess(false);
-
         try {
             let formData = new FormData();
             console.log('Submitting pie:', pieName);
@@ -49,7 +39,7 @@ function SubmitPie() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ userId: userId })
+                body: JSON.stringify({ userId: Cookies.get('userId')})
             });
             if (bakePieRes.status != 200) {
                 setError(`Failed to submit pie with error code ${bakePieRes.status}. Please try again.`);
@@ -60,22 +50,53 @@ function SubmitPie() {
             console.log(bakePieResJson);
             if (selectedImage) {
                 // Use Promise to handle the async FileReader operation
-                const base64Data = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result.split(',')[1]);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(selectedImage);
+                // const base64Data = await new Promise((resolve, reject) => {
+                //     const reader = new FileReader();
+                //     reader.onload = () => resolve(reader.result.split(',')[1]);
+                //     reader.onerror = reject;
+                //     reader.readAsDataURL(selectedImage);
+                // });
+                console.log("Selected image:", selectedImage);
+                console.log("Adding Image");
+                var url = `/backend/add-image/${bakePieResJson.pieId}/filename/${selectedImage.name}`;
+                console.log(url);
+                let res = await fetch(url, { method: 'POST' } );
+                console.log(res);
+                if (!res.ok) {
+                    setError(`Failed to submit pie image with error code ${res.status}. Please try again.`);
+                    return
+                }
+
+                console.log("Bacend call successfull")
+                let resJson = await res.json();
+                console.log(resJson);
+                let sasUrl = resJson.imageUrl
+                console.log("SAS URL:", sasUrl);
+
+                // Step 3: Upload the image directly to the SAS URL
+                const uploadResponse = await fetch(sasUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'x-ms-blob-type': 'BlockBlob',
+                        'Content-Type': selectedImage.type,
+                    },
+                    body: selectedImage,  // Send the raw file
                 });
                 
-                formData.append('image', base64Data);
-            }
+                if (!uploadResponse.ok) {
+                    setError(`Failed to upload image with status ${uploadResponse.status}. Please try again.`);
+                    return;
+                }
+                
+                // formData.append('image', base64Data);
+                
+                // Get SAS URL
 
-            let res = await fetch(`/backend/bake-pie/${pieName}`, {method: 'POST', body: formData});
-            if (res.status != 200) {
-                setError(`Failed to submit pie with error code ${res.status}. Please try again.`);
-            } else {
-                setSuccess(true);
+                // Upload to SAS URL
             }
+            setSuccess(true);
+
+
         } catch (err) {
             setError(`Failed to submit pie. Please try again. Error: ${err.message}`);
         }
