@@ -13,6 +13,7 @@ import {
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 
+
 function Login() {
     const navigate = useNavigate();
     const [registerEmail, setRegisterEmail] = useState('');
@@ -67,8 +68,7 @@ function Login() {
                 return;
             }
 
-            const data = await response.json();
-            
+            const data = await response.json();        
             if (!data.verificationResult) {
                 throw new error(data.message);
             } else {
