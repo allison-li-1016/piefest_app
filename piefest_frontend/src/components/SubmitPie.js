@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import NavBar from '../components/NavBar';
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 import { 
     Container, 
@@ -31,11 +31,16 @@ function SubmitPie() {
         e.preventDefault();
         setError(null);
         setSuccess(false);
-
         try {
             let formData = new FormData();
             console.log('Submitting pie:', pieName);
-            let bakePieRes = await fetch(`/backend/bake-pie/${pieName}`, {method: 'POST'});
+            let bakePieRes = await fetch(`/backend/bake-pie/${pieName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: Cookies.get('userId')})
+            });
             if (bakePieRes.status != 200) {
                 setError(`Failed to submit pie with error code ${bakePieRes.status}. Please try again.`);
                 return;
@@ -104,6 +109,22 @@ function SubmitPie() {
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
                     Submit Your Pie
                 </Typography>
+
+                <Alert 
+                severity="info" 
+                sx={{ 
+                    mb: 3, 
+                    borderLeft: '4px solid #2196f3',
+                    '& .MuiAlert-icon': {
+                        color: '#2196f3'
+                    }
+                }}
+            >
+                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                    Each competitor is limited to 1 pie submission. 
+                    Submitting a new pie will replace your previous entry.
+                </Typography>
+                </Alert>
                 
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                 <TextField

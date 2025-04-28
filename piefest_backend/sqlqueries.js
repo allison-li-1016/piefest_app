@@ -26,7 +26,9 @@ const CreatePieTableQuery =
 CREATE TABLE Pies (
     PieId INT IDENTITY(1,1) PRIMARY KEY,
     PieName VARCHAR(100) NOT NULL,
-    PieImage VARCHAR(MAX) NULL
+    PieImage VARCHAR(MAX) NULL,
+    UserId INT,
+    FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 `
 const CreateVotesTableQuery =
@@ -58,7 +60,31 @@ const UpdateVoteQuery =
 `UPDATE Votes SET Vote = @vote WHERE UserId = @userId AND PieId = @pieId;`
 
 const BakePieQuery = 
-`INSERT INTO Pies (PieName, PieImage) VALUES (@name, @image); SELECT SCOPE_IDENTITY() AS pieId;`
+ `DECLARE @existingPieId INT;
+
+-- Check if user already has a pie
+SELECT @existingPieId = PieId 
+FROM Pies 
+WHERE UserId = @userId;
+
+IF @existingPieId IS NOT NULL
+BEGIN
+    -- User already has a pie, update it
+    UPDATE Pies 
+    SET PieName = @name, PieImage = @image 
+    WHERE PieId = @existingPieId;
+    
+    SELECT @existingPieId AS pieId;
+END
+ELSE
+BEGIN
+    -- New pie for this user
+    INSERT INTO Pies (PieName, PieImage, UserId) 
+    VALUES (@name, @image, @userId);
+    
+    SELECT SCOPE_IDENTITY() AS pieId;
+END
+`;
 
 const GetUserQuery = 
 `SELECT * FROM USERS where Username = @username;`

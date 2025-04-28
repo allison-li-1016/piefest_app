@@ -29,7 +29,6 @@ router.get('/get-user-votes/:userid', async (req, res) => {
 router.post('/vote', async (req, res) => {
     try { 
         raw_id = parseInt(unhashUserId(req.body.userId),10);
-        console.log("Raw id: ", raw_id);
         const existingVote = await CheckForExistingVote(raw_id, req.body.pieId);
         if (existingVote && existingVote.length > 0) {
             await UpdateVote(raw_id, req.body.pieId, req.body.vote);
@@ -103,20 +102,29 @@ async function VoteForPie(pieId, vote, userId) {
 
 router.post('/bake-pie/:name', async (req, res) => {
     try { 
-        var pieId = await BakePie(req.params.name, req.body.image);
-        res.json({ "pieId": pieId });
+        raw_id = parseInt(unhashUserId(req.body.userId),10);
+        var pieId = await BakePie(req.params.name, req.body.image, raw_id);
+        console.log(pieId);
+        res.json({ 
+            "pieId": pieId,
+            "userId": raw_id,
+            "pieName": req.params.name
+
+         });
     } catch (err) {
         res.status(500).send(`Pie entry failed: ${err.message}`);
     }
 });
 
-async function BakePie(name, base64ImageData) {
+async function BakePie(name, base64ImageData, userId) {
+    console.log("Raw id: " + userId);
     if (!(typeof name === "string" && name.trim().length > 0 && name.length <= 100)) {
         throw new Error("Invalid pie name: must be a non-empty string within 100 characters.");
     }
     let res = await ConnectAndQuery(BakePieQuery, new Map([
         ['name', name],
-        ['image', base64ImageData ? base64ImageData : null]
+        ['image', base64ImageData ? base64ImageData : null],
+        ['userId', userId]
     ]));
     return res[0].pieId;
 }
