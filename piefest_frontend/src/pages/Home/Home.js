@@ -348,6 +348,32 @@ function Home() {
                             </Typography>
                         </Grid>
 
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                <Box
+                                            component="img"
+                                            src="/images/default.jpeg" // Path to your image
+                                            alt="Gireesh Mahajan"
+                                            sx={{
+                                                width: 80,
+                                                height: 80,
+                                                mr: 2,
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '2px solid',
+                                                borderColor: 'secondary.main',
+                                            }}
+                                        />
+                                <Box>
+                                    <Typography variant="h6">Nicco Garofalo</Typography>
+                                    <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
+                                </Box>
+                            </Box>
+                            <Typography variant="body2">
+                                Favorite Pie: Arielle’s 2023 Key Lime Pie which won 2nd 🥈 place at the inaugural Piefest.
+                            </Typography>
+                        </Grid>
+
                     </Grid>
                     
                     <Divider sx={{ my: 3 }} />
