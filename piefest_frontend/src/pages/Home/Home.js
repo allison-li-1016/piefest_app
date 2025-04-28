@@ -318,7 +318,7 @@ function Home() {
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite Pie: TBD.
+                                Favorite Pie: Pickle Pie 🥒.
                             </Typography>
                         </Grid>
 
@@ -365,12 +365,12 @@ function Home() {
                                             }}
                                         />
                                 <Box>
-                                    <Typography variant="h6">Nicco Garofalo</Typography>
+                                    <Typography variant="h6">Gireesh Mahajan</Typography>
                                     <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite Pie: Arielle’s 2023 Key Lime Pie which won 2nd 🥈 place at the inaugural Piefest.
+                                Favorite Pie: Lemon Tart 🍋.
                             </Typography>
                         </Grid>
 
