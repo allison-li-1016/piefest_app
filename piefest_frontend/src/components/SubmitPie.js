@@ -109,6 +109,22 @@ function SubmitPie() {
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
                     Submit Your Pie
                 </Typography>
+
+                <Alert 
+                severity="info" 
+                sx={{ 
+                    mb: 3, 
+                    borderLeft: '4px solid #2196f3',
+                    '& .MuiAlert-icon': {
+                        color: '#2196f3'
+                    }
+                }}
+            >
+                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                    Each competitor is limited to 1 pie submission. 
+                    Submitting a new pie will replace your previous entry.
+                </Typography>
+                </Alert>
                 
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
                 <TextField
