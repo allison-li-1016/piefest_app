@@ -21,6 +21,7 @@
   "dependencies": {
     "@azure/storage-blob": "^12.27.0",
     "@propeldata/react-leaderboard": "^0.5.4",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mssql": "^11.0.1",
