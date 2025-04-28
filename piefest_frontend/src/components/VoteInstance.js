@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PieCard from './PieCard';
+import { unhashUserId } from './Login';
 import { updatePieRatings, getAllPies, getAllVotesForUser } from './Helpers/Helpers';
 import Cookies from 'js-cookie';
 
@@ -61,8 +62,10 @@ function VoteInstance() {
 			try {
 				const allPies = await getAllPies();
 				setPies(allPies);
-
-				const userId = parseInt(Cookies.get('userId'), 10);
+				
+				const hashedUserId = Cookies.get('userId');
+				const userId = parseInt(unhashUserId(hashedUserId),10);
+				console.log("User ID:", userId);
 				const votes = await getAllVotesForUser(userId);
 				
 				// Initialize ratings object
@@ -100,7 +103,8 @@ function VoteInstance() {
 	const handleSubmit = async () => {
 		try {
 
-			const userId = parseInt(Cookies.get('userId'),10);
+			const hashedUserId = Cookies.get('userId');
+			const userId = parseInt(unhashUserId(hashedUserId),10);
 
 			if (!userId) {
 				throw new Error("User ID not found in cookies.");
@@ -121,9 +125,9 @@ function VoteInstance() {
 	const handleSubmitWithAnimation = async () => {
 		setShowAnimation(true);
 		try {
-
-			const userId = parseInt(Cookies.get('userId'),10);
-
+			const hashedUserId = Cookies.get('userId');
+			const userId = parseInt(unhashUserId(hashedUserId),10);
+			console.log("User ID:", userId);
 			if (!userId) {
 				throw new Error("User ID not found in cookies.");
 			}
