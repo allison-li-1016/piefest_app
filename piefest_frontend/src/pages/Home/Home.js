@@ -248,7 +248,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                             component="img"
-                                            src="/images/benjamin.jpeg" // Path to your image
+                                            src="/images/benjamin.jpg" // Path to your image
                                             alt="Benjamin Brusniak"
                                             sx={{
                                                 width: 80,
@@ -300,7 +300,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                         component="img"
-                                        src="/images/default.jpg" // Path to your image
+                                        src="/images/nick.jpg" // Path to your image
                                         alt="Nicholas Lumiere"
                                         sx={{
                                             width: 80,
@@ -352,7 +352,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                             component="img"
-                                            src="/images/default.jpg" // Path to your image
+                                            src="/images/gireesh.jpg" // Path to your image
                                             alt="Gireesh Mahajan"
                                             sx={{
                                                 width: 80,
