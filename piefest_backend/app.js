@@ -282,4 +282,46 @@ async function GetResults(limit) {
     return votes;
 }
 
+// Fetch all superlatives
+router.get('/superlatives', async (req, res) => {
+    try {
+      const pool = await sql.connect();
+      const result = await pool.request().query(GetSuperlativesQuery);
+      res.json(result.recordset);
+    } catch (err) {
+      res.status(500).send('Error fetching superlatives');
+    }
+  });
+  
+  // Fetch all pies
+  router.get('/pies', async (req, res) => {
+    try {
+      const pool = await sql.connect();
+      const result = await pool.request().query(GetAllPiesQuery);
+      res.json(result.recordset);
+    } catch (err) {
+      res.status(500).send('Error fetching pies');
+    }
+  });
+  
+  // Submit a vote for a pie under a superlative
+  router.post('/vote', async (req, res) => {
+    const { userId, pieId, superlativeId } = req.body;
+    const query = `
+      INSERT INTO SuperlativeVotes (UserId, PieId, SuperlativeId)
+      VALUES (@userId, @pieId, @superlativeId)
+    `;
+    try {
+      const pool = await sql.connect();
+      await pool.request()
+        .input('userId', sql.Int, userId)
+        .input('pieId', sql.Int, pieId)
+        .input('superlativeId', sql.Int, superlativeId)
+        .query(query);
+      res.status(200).send('Vote submitted successfully');
+    } catch (err) {
+      res.status(500).send('Error submitting vote');
+    }
+  });
+
 module.exports = router;

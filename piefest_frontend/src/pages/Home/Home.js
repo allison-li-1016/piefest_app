@@ -62,6 +62,13 @@ function Home() {
                         >
                             Submit a Pie
                         </Button>
+                        <Button
+                            variant="contained"
+                            color="warning"
+                            onClick={() => navigate('/superlatives')}
+                        >
+                            View Superlatives
+                        </Button>
                     </Stack>
                 </Box>
 

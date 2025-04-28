@@ -40,6 +40,30 @@ CREATE TABLE Votes (
     FOREIGN Key (PieID) REFERENCES Pies(PieID)
 );
 `
+
+const CreateSuperlativesTableQuery =
+`
+CREATE TABLE Superlatives (
+    SuperlativeId INT IDENTITY(1,1) PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL,
+    Description VARCHAR(255) NOT NULL
+);
+`
+
+const CreateSuperlativeVotesTableQuery =
+`
+CREATE TABLE SuperlativeVotes (
+    UserId INT NOT NULL,
+    PieId INT NOT NULL,
+    SuperlativeId INT NOT NULL,
+    PRIMARY KEY (UserID, SuperlativeId),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (PieID) REFERENCES Pies(PieID),
+    FOREIGN KEY (SuperlativeId) REFERENCES Superlatives(SuperlativeId)
+);
+
+`
+
 const GetAllPiesQuery = 
 `
 SELECT * FROM Pies;
@@ -83,11 +107,28 @@ GROUP BY
 ORDER BY 
     AverageVote DESC;`
 
+const GetSuperlativesQuery =
+`
+SELECT * FROM Superlatives;
+`
+
+const GetSuperlativeVotesQuery =
+`
+SELECT
+    SuperlativeVotes.UserId,
+    SuperlativeVotes.SuperlativeId,
+    SuperlativeVotes.PieId,
+WHERE
+    SuperlativeVotes.UserId = @userId;
+`
+
 module.exports = {
     CreateUserTableQuery,
     CreateAdminTableQuery,
     CreatePieTableQuery,
     CreateVotesTableQuery,
+    CreateSuperlativesTableQuery,
+    CreateSuperlativeVotesTableQuery,
     CheckAdminCredentialsQuery,
     GetAllPiesQuery,
     VoteForPieQuery,
@@ -99,5 +140,7 @@ module.exports = {
     VerifyUserQuery,
     CheckForExistingVoteQuery,
     UpdateVoteQuery,
-    GetAllVotesForUserQuery
+    GetAllVotesForUserQuery,
+    GetSuperlativesQuery,
+    GetSuperlativeVotesQuery
 }
