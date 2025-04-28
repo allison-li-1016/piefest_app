@@ -336,11 +336,13 @@ async function GetResults(limit) {
 // Fetch all superlatives
 router.get('/superlatives', async (req, res) => {
     try {
-      const pool = await sql.connect();
-      const result = await pool.request().query(GetSuperlativesQuery);
-      res.json(result.recordset);
+      const result = await ConnectAndQuery(GetSuperlativesQuery);
+      // log the result for debugging
+      console.log('Superlatives:', result);
+      res.json(result);
     } catch (err) {
       res.status(500).send('Error fetching superlatives');
+        console.error(err);
     }
   });
 
