@@ -63,9 +63,7 @@ function VoteInstance() {
 				const allPies = await getAllPies();
 				setPies(allPies);
 				
-				const hashedUserId = Cookies.get('userId');
-				const userId = parseInt(unhashUserId(hashedUserId),10);
-				console.log("User ID:", userId);
+				const userId = Cookies.get('userId');
 				const votes = await getAllVotesForUser(userId);
 				
 				// Initialize ratings object
@@ -102,14 +100,11 @@ function VoteInstance() {
 	// Handle submit function
 	const handleSubmit = async () => {
 		try {
-
-			const hashedUserId = Cookies.get('userId');
-			const userId = parseInt(unhashUserId(hashedUserId),10);
+			const userId = Cookies.get('userId');
 
 			if (!userId) {
 				throw new Error("User ID not found in cookies.");
 			}
-
 			await updatePieRatings(userId, ratings);
 
 		} catch (error) {
@@ -125,9 +120,7 @@ function VoteInstance() {
 	const handleSubmitWithAnimation = async () => {
 		setShowAnimation(true);
 		try {
-			const hashedUserId = Cookies.get('userId');
-			const userId = parseInt(unhashUserId(hashedUserId),10);
-			console.log("User ID:", userId);
+			const userId = Cookies.get('userId');
 			if (!userId) {
 				throw new Error("User ID not found in cookies.");
 			}

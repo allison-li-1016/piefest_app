@@ -12,25 +12,7 @@ import {
 } from '@mui/material';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import CryptoJS from 'crypto-js';
 
-
-const hashUserId = (userId) => {
-  const userIdStr = String(userId);
-  const encrypted = CryptoJS.AES.encrypt(userIdStr, SECRET_KEY).toString();
-  return encodeURIComponent(encrypted);
-};
-
-const unhashUserId = (hashedId) => {
-  try {
-    const decoded = decodeURIComponent(hashedId);
-    const decrypted = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
-    return decrypted.toString(CryptoJS.enc.Utf8);
-  } catch (error) {
-    console.error("Failed to unhash userId:", error);
-    return null;
-  }
-};
 
 function Login() {
     const navigate = useNavigate();
@@ -86,16 +68,14 @@ function Login() {
                 return;
             }
 
-            const data = await response.json();
-            const hashedUserId = hashUserId(data.userId);
-            
+            const data = await response.json();        
             if (!data.verificationResult) {
                 throw new error(data.message);
             } else {
                 // set cookie with 7 day expiry
                 Cookies.set('emailUsername', data.username, { expires: 7 });
                 Cookies.set('definitelyAnEncryptedPassword', data.password, { expires: 7 });
-                Cookies.set('userId', hashedUserId, { expires: 7 });
+                Cookies.set('userId', data.userId, { expires: 7 });
             }
             
             // force reload the page
@@ -199,5 +179,4 @@ function Login() {
     );
 }
 
-export { hashUserId, unhashUserId };
 export default Login;

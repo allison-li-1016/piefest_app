@@ -1,3 +1,4 @@
+const CryptoJS = require('crypto-js');
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
@@ -5,14 +6,16 @@ const { AddPieImage, VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuer
 const { generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } = require('@azure/storage-blob');
 const {returnPassword} = require('./PasswordGenerator.js');
 
+
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
 });
 
 router.get('/get-user-votes/:userid', async (req, res) => {
     try { 
+        raw_id = parseInt(unhashUserId(req.params.userid),10);
         const votes = await ConnectAndQuery(GetAllVotesForUserQuery, new Map([
-            ['userId', req.params.userid]
+            ['userId', raw_id ]
         ]));
         res.json({
             message: "User successfully retrieved 👨🏻‍🍳",
@@ -25,12 +28,14 @@ router.get('/get-user-votes/:userid', async (req, res) => {
 
 router.post('/vote', async (req, res) => {
     try { 
-        const existingVote = await CheckForExistingVote(req.body.userId, req.body.pieId);
+        raw_id = parseInt(unhashUserId(req.body.userId),10);
+        console.log("Raw id: ", raw_id);
+        const existingVote = await CheckForExistingVote(raw_id, req.body.pieId);
         if (existingVote && existingVote.length > 0) {
-            await UpdateVote(req.body.userId, req.body.pieId, req.body.vote);
+            await UpdateVote(raw_id, req.body.pieId, req.body.vote);
             res.send("Vote casted successfully.");
         } else {
-            await VoteForPie(req.body.pieId, req.body.vote, req.body.userId);
+            await VoteForPie(req.body.pieId, req.body.vote, raw_id);
             res.send("Vote casted successfully.");
         }
     } catch (err) {
@@ -47,7 +52,7 @@ async function CheckForExistingVote(userId, pieId) {
     }
 
     const existingVote = await ConnectAndQuery(CheckForExistingVoteQuery, new Map([
-        ['userId', userId],
+        ['userId', raw_id],
         ['pieId', pieId]
     ]));
 
@@ -69,7 +74,7 @@ async function UpdateVote(userId, pieId, vote) {
     }
 
     await ConnectAndQuery(UpdateVoteQuery, new Map([
-        ['userId', userId],
+        ['userId', raw_id],
         ['pieId', pieId], 
         ['vote', vote]
     ]));
@@ -90,7 +95,7 @@ async function VoteForPie(pieId, vote, userId) {
     }
 
     await ConnectAndQuery(VoteForPieQuery, new Map([
-        ['userId', userId],
+        ['userId', raw_id],
         ['pieId', pieId], 
         ['vote', vote]
     ]));
@@ -99,7 +104,6 @@ async function VoteForPie(pieId, vote, userId) {
 router.post('/bake-pie/:name', async (req, res) => {
     try { 
         var pieId = await BakePie(req.params.name, req.body.image);
-        //console.log(pieId);
         res.json({ "pieId": pieId });
     } catch (err) {
         res.status(500).send(`Pie entry failed: ${err.message}`);
@@ -189,7 +193,7 @@ router.post('/verify-user', async (req, res) => {
                 message: "User is verified 👨🏻‍🍳",
                 username: verificationResultJson.Username, 
                 password: verificationResultJson.Password,
-                userId: verificationResultJson.UserId
+                userId: hashUserId(verificationResultJson.UserId)
             });
         } else {
             res.status(401).send("User verification failed: Invalid credentials.");
@@ -333,5 +337,22 @@ async function generateSasUrl(blobName) {
 
     return sasUrl;
 }
+
+const hashUserId = (userId) => {
+    const userIdStr = String(userId);
+    const encrypted = CryptoJS.AES.encrypt(userIdStr, process.env.SECRET_KEY).toString();
+    return encodeURIComponent(encrypted);
+  };
+  
+  const unhashUserId = (hashedId) => {
+    try {
+      const decoded = decodeURIComponent(hashedId);
+      const decrypted = CryptoJS.AES.decrypt(decoded, process.env.SECRET_KEY);
+      return decrypted.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+      console.error("Failed to unhash userId:", error);
+      return null;
+    }
+  };
 
 module.exports = router;
