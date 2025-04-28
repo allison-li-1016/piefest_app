@@ -288,7 +288,7 @@ function Home() {
                                 />
                                 <Box>
                                     <Typography variant="h6">Allison Li</Typography>
-                                    <Typography variant="body2" color="text.secondary">Backend Developer</Typography>
+                                    <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
                                 </Box>
                             </Box>
                             <Typography variant="body2">
@@ -314,7 +314,7 @@ function Home() {
                                     />
                                 <Box>
                                     <Typography variant="h6">Nicholas Lumiere</Typography>
-                                    <Typography variant="body2" color="text.secondary">Front End Developer</Typography>
+                                    <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
                                 </Box>
                             </Box>
                             <Typography variant="body2">
@@ -352,7 +352,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                             component="img"
-                                            src="/images/default.jpeg" // Path to your image
+                                            src="/images/default.jpg" // Path to your image
                                             alt="Gireesh Mahajan"
                                             sx={{
                                                 width: 80,
