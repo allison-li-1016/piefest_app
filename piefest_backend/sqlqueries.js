@@ -112,7 +112,7 @@ const GetSuperlativesQuery =
 SELECT * FROM Superlatives;
 `
 
-const GetSuperlativeVotesQuery =
+const GetSuperlativeVotesByUserQuery =
 `
 SELECT
     SuperlativeVotes.UserId,
@@ -121,6 +121,29 @@ SELECT
 WHERE
     SuperlativeVotes.UserId = @userId;
 `
+
+const GetSuperlativeVotesQuery =
+`
+SELECT
+    SuperlativeVotes.PieId,
+WHERE
+    SuperlativeVotes.UserId = @userId
+    AND SuperlativeVotes.SuperlativeId = @superlativeId;
+`
+
+const InsertSuperlativeVoteQuery =
+`
+INSERT INTO SuperlativeVotes (UserId, PieId, SuperlativeId)
+VALUES (@userId, @pieId, @superlativeId);
+`
+
+const UpdateSuperlativeVoteQuery =
+`
+UPDATE SuperlativeVotes
+SET PieId = @pieId
+WHERE UserId = @userId AND SuperlativeId = @superlativeId;
+`
+
 
 module.exports = {
     CreateUserTableQuery,
@@ -142,5 +165,8 @@ module.exports = {
     UpdateVoteQuery,
     GetAllVotesForUserQuery,
     GetSuperlativesQuery,
-    GetSuperlativeVotesQuery
+    GetSuperlativeVotesQuery,
+    GetSuperlativeVotesByUserQuery,
+    InsertSuperlativeVoteQuery,
+    UpdateSuperlativeVoteQuery,
 }

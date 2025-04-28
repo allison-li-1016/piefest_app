@@ -1,7 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery, GetAllVotesForUserQuery } = require('./sqlqueries.js');
+const { 
+    VerifyUserQuery,
+    GetUserQuery,
+    VoteForPieQuery,
+    BakePieQuery,
+    AddUserQuery,
+    GetAllPiesQuery,
+    GetPieQuery,
+    GetVotesQuery,
+    CheckForExistingVoteQuery,
+    UpdateVoteQuery,
+    GetAllVotesForUserQuery,
+    GetSuperlativesQuery,
+    GetSuperlativeVotesQuery,
+    GetSuperlativeVotesByUserQuery
+} = require('./sqlqueries.js');
 const {returnPassword} = require('./PasswordGenerator.js');
 
 router.get('/hello', async (req, res) => {
@@ -92,6 +107,42 @@ async function VoteForPie(pieId, vote, userId) {
         ['userId', userId],
         ['pieId', pieId], 
         ['vote', vote]
+    ]));
+}
+
+async function InsertSuperlativeVote(userId, pieId, superlativeId) {
+    if (!Number.isInteger(userId)) {
+        throw new Error("Invalid userId: must be an integer.");
+    }
+    if (!Number.isInteger(pieId)) {
+        throw new Error("Invalid pieId: must be an integer.");
+    }
+    if (!Number.isInteger(superlativeId)) {
+        throw new Error("Invalid superlativeId: must be an integer.");
+    }
+
+    await ConnectAndQuery(VoteForPieQuery, new Map([
+        ['userId', userId],
+        ['pieId', pieId], 
+        ['superlativeId', superlativeId]
+    ]));
+}
+
+async function UpdateSuperlativeVote(userId, pieId, superlativeId) {
+    if (!Number.isInteger(userId)) {
+        throw new Error("Invalid userId: must be an integer.");
+    }
+    if (!Number.isInteger(pieId)) {
+        throw new Error("Invalid pieId: must be an integer.");
+    }
+    if (!Number.isInteger(superlativeId)) {
+        throw new Error("Invalid superlativeId: must be an integer.");
+    }
+
+    await ConnectAndQuery(UpdateVoteQuery, new Map([
+        ['userId', userId],
+        ['pieId', pieId], 
+        ['superlativeId', superlativeId]
     ]));
 }
 
@@ -292,36 +343,42 @@ router.get('/superlatives', async (req, res) => {
       res.status(500).send('Error fetching superlatives');
     }
   });
-  
-  // Fetch all pies
-  router.get('/pies', async (req, res) => {
-    try {
-      const pool = await sql.connect();
-      const result = await pool.request().query(GetAllPiesQuery);
-      res.json(result.recordset);
-    } catch (err) {
-      res.status(500).send('Error fetching pies');
-    }
-  });
-  
-  // Submit a vote for a pie under a superlative
-  router.post('/vote', async (req, res) => {
+
+// Submit a vote for a pie under a superlative
+// If the user has already voted for this superlative, update their vote
+// If the user has not voted for this superlative, insert a new vote
+router.post('/vote-superlative', async (req, res) => {
     const { userId, pieId, superlativeId } = req.body;
-    const query = `
-      INSERT INTO SuperlativeVotes (UserId, PieId, SuperlativeId)
-      VALUES (@userId, @pieId, @superlativeId)
-    `;
     try {
-      const pool = await sql.connect();
-      await pool.request()
-        .input('userId', sql.Int, userId)
-        .input('pieId', sql.Int, pieId)
-        .input('superlativeId', sql.Int, superlativeId)
-        .query(query);
-      res.status(200).send('Vote submitted successfully');
+        const existingVote = await ConnectAndQuery(GetSuperlativeVotesQuery, new Map([
+            ['userId', userId],
+            ['superlativeId', superlativeId]
+        ]));
+
+        if (existingVote && existingVote.length > 0) {
+            await UpdateSuperlativeVote(userId, pieId, superlativeId);
+            res.send("Superlative vote updated successfully.");
+        } else {
+            await InsertSuperlativeVote(userId, pieId, superlativeId);
+            res.send("Superlative vote casted successfully.");
+        }
     } catch (err) {
-      res.status(500).send('Error submitting vote');
+        res.status(500).send(`Superlative vote failed: ${err.message}`);
     }
-  });
+
+});
+
+// Get all superlative votes for a user
+router.get('/superlative-votes/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const votes = await ConnectAndQuery(GetSuperlativeVotesByUserQuery, new Map([
+            ['userId', userId]
+        ]));
+        res.json(votes);
+    } catch (err) {
+        res.status(500).send(`Get superlative votes failed: ${err.message}`);
+    }
+});
 
 module.exports = router;
