@@ -140,7 +140,7 @@ function SubmitPie() {
                 {/* Image Upload */}
                 <Box sx={{ mt: 3, mb: 2 }}>
                     <Typography variant="subtitle1" gutterBottom>
-                        Upload an image of your pie (camera only!):
+                        Upload an image of your pie:
                     </Typography>
                     <input
                         accept="image/jpg, image/jpeg"
