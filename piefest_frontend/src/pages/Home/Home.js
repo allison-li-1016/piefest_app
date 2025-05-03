@@ -36,7 +36,7 @@ function Home() {
         <Container maxWidth="md">
             <Box sx={{ py: 4 }}>
                 <Typography variant="h2" component="h1" gutterBottom align="center">
-                    Welcome to Piefest!
+                    Welcome to PieFest!
                 </Typography>
 
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
@@ -74,7 +74,7 @@ function Home() {
 
                 <Paper sx={{ p: 3, mb: 4 }}>
                     <Typography variant="h4" gutterBottom>
-                        About Piefest
+                        About PieFest
                     </Typography>
                     <Box 
                         sx={{ 
@@ -133,7 +133,22 @@ function Home() {
                                     <Typography variant="h5" component="p" sx={{ fontWeight: 'medium', color: '#2351a3' }}> {/* Changed to blue */}
                                         Rooster Apartments 
                                     </Typography>
-                                    <Typography variant="body1" component="p" sx={{ fontWeight: 'medium', color: '#2351a3' }}> {/* Changed to blue */}
+                                    <Typography 
+                                        variant="body1" 
+                                        component="p" 
+                                        sx={{ 
+                                            fontWeight: 'medium', 
+                                            color: '#2351a3',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            '&:hover': {
+                                                textDecoration: 'underline',
+                                                cursor: 'pointer'
+                                            }
+                                        }}
+                                        onClick={() => window.open('https://maps.google.com/?q=839+NE+66th+Street,+Seattle,+WA', '_blank')}
+                                    > 
+                                        <Box component="span" sx={{ mr: 0.5 }}>🗺️</Box>
                                         839 NE 66th Street
                                     </Typography>
                                     <Typography variant="body2" sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, color: '#2351a3' }}> {/* Changed to blue */}
@@ -183,7 +198,7 @@ function Home() {
                     </Typography>
 
                     <Typography variant="body1" paragraph>
-                        Honestly the glue holding piefest together!
+                        Honestly the glue holding PieFest together!
                     </Typography>
 
                     <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -191,7 +206,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                             component="img"
-                                            src="/images/default.jpg" // Path to your image
+                                            src="/images/tansy.jpeg" // Path to your image
                                             alt="Tansy Huang"
                                             sx={{
                                                 width: 80,
@@ -209,7 +224,7 @@ function Home() {
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite Pie: TBD.
+                                Favorite Pie: Sweet Potato Pie 🍠.
                             </Typography>
                         </Grid>
                         
@@ -217,7 +232,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                             component="img"
-                                            src="/images/default.jpg" // Path to your image
+                                            src="/images/arielle.jpeg" // Path to your image
                                             alt="Arielle Perreault"
                                             sx={{
                                                 width: 80,
@@ -235,7 +250,7 @@ function Home() {
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite Pie: TBD.
+                                Favorite Pie: Peanut Butter Pie 🥜.
                             </Typography>
                         </Grid>
                     </Grid>
@@ -247,7 +262,7 @@ function Home() {
                     </Typography>
                     
                     <Typography variant="body1" paragraph>
-                        Piefest's app was created by a team of passionate developers who love both code and pie!
+                        PieFest's app was created by a team of passionate developers who love both code and pie!
                     </Typography>
                     
                     <Grid container spacing={3} sx={{ mt: 2 }}>
@@ -255,7 +270,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                             component="img"
-                                            src="/images/default.jpg" // Path to your image
+                                            src="/images/benjamin.jpg" // Path to your image
                                             alt="Benjamin Brusniak"
                                             sx={{
                                                 width: 80,
@@ -273,7 +288,7 @@ function Home() {
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite Pie: Pepto Bismol Pie.
+                                Favorite Pie: Pepto Bismol Pie 🤮.
                             </Typography>
                         </Grid>
                         
@@ -281,7 +296,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                     component="img"
-                                    src="/images/Allison.jpg" // Path to your image
+                                    src="/images/allison.jpeg" // Path to your image
                                     alt="Allison Li"
                                     sx={{
                                         width: 80,
@@ -295,11 +310,11 @@ function Home() {
                                 />
                                 <Box>
                                     <Typography variant="h6">Allison Li</Typography>
-                                    <Typography variant="body2" color="text.secondary">Backend Developer</Typography>
+                                    <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite pie: Strawberry pie 🍓. 
+                                Favorite pie: Strawberry Pie 🍓. 
                             </Typography>
                         </Grid>
 
@@ -307,7 +322,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                         component="img"
-                                        src="/images/default.jpg" // Path to your image
+                                        src="/images/nick.jpg" // Path to your image
                                         alt="Nicholas Lumiere"
                                         sx={{
                                             width: 80,
@@ -321,11 +336,11 @@ function Home() {
                                     />
                                 <Box>
                                     <Typography variant="h6">Nicholas Lumiere</Typography>
-                                    <Typography variant="body2" color="text.secondary">Front End Developer</Typography>
+                                    <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite Pie: TBD.
+                                Favorite Pie: Pickle Pie 🥒.
                             </Typography>
                         </Grid>
 
@@ -333,7 +348,7 @@ function Home() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Box
                                             component="img"
-                                            src="/images/default.jpg" // Path to your image
+                                            src="/images/nicco.jpeg" // Path to your image
                                             alt="Nicco Garofalo"
                                             sx={{
                                                 width: 80,
@@ -351,7 +366,33 @@ function Home() {
                                 </Box>
                             </Box>
                             <Typography variant="body2">
-                                Favorite Pie: TBD.
+                                Favorite Pie: Arielle’s 2023 Key Lime Pie which won 2nd 🥈 place at the inaugural Piefest.
+                            </Typography>
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                <Box
+                                            component="img"
+                                            src="/images/gireesh.jpg" // Path to your image
+                                            alt="Gireesh Mahajan"
+                                            sx={{
+                                                width: 80,
+                                                height: 80,
+                                                mr: 2,
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '2px solid',
+                                                borderColor: 'secondary.main',
+                                            }}
+                                        />
+                                <Box>
+                                    <Typography variant="h6">Gireesh Mahajan</Typography>
+                                    <Typography variant="body2" color="text.secondary">Full Stack Developer</Typography>
+                                </Box>
+                            </Box>
+                            <Typography variant="body2">
+                                Favorite Pie: Lemon Tart 🍋.
                             </Typography>
                         </Grid>
 
@@ -496,7 +537,7 @@ function Home() {
 
                 <Box sx={{ mt: 4, textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary">
-                        © 2025 Piefest. All rights reserved.
+                        © 2025 PieFest. All rights reserved.
                     </Typography>
                 </Box>
             </Box>

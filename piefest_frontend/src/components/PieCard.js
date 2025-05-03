@@ -41,9 +41,7 @@ const PieCard = ({ name, description, image }) => {
     useEffect(() => {
         // Process image if it's a base64 string without data URL prefix
         const imageUrl = image 
-            ? (image.startsWith('data:') 
-                ? image 
-                : `data:image/jpeg;base64,${image}`)
+            ? image
             : GARMFIELD_IMG;
             
         setPie({

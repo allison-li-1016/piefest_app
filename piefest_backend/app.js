@@ -1,7 +1,9 @@
+const CryptoJS = require('crypto-js');
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
 const { 
+    AddPieImage, 
     VerifyUserQuery,
     GetUserQuery,
     VoteForPieQuery,
@@ -17,7 +19,9 @@ const {
     GetSuperlativeVotesQuery,
     GetSuperlativeVotesByUserQuery
 } = require('./sqlqueries.js');
+const { generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } = require('@azure/storage-blob');
 const {returnPassword} = require('./PasswordGenerator.js');
+
 
 router.get('/hello', async (req, res) => {
     res.type("text").send("Hello from react backend");
@@ -25,8 +29,9 @@ router.get('/hello', async (req, res) => {
 
 router.get('/get-user-votes/:userid', async (req, res) => {
     try { 
+        raw_id = parseInt(unhashUserId(req.params.userid),10);
         const votes = await ConnectAndQuery(GetAllVotesForUserQuery, new Map([
-            ['userId', req.params.userid]
+            ['userId', raw_id ]
         ]));
         res.json({
             message: "User successfully retrieved 👨🏻‍🍳",
@@ -39,12 +44,13 @@ router.get('/get-user-votes/:userid', async (req, res) => {
 
 router.post('/vote', async (req, res) => {
     try { 
-        const existingVote = await CheckForExistingVote(req.body.userId, req.body.pieId);
+        raw_id = parseInt(unhashUserId(req.body.userId),10);
+        const existingVote = await CheckForExistingVote(raw_id, req.body.pieId);
         if (existingVote && existingVote.length > 0) {
-            await UpdateVote(req.body.userId, req.body.pieId, req.body.vote);
+            await UpdateVote(raw_id, req.body.pieId, req.body.vote);
             res.send("Vote casted successfully.");
         } else {
-            await VoteForPie(req.body.pieId, req.body.vote, req.body.userId);
+            await VoteForPie(req.body.pieId, req.body.vote, raw_id);
             res.send("Vote casted successfully.");
         }
     } catch (err) {
@@ -61,7 +67,7 @@ async function CheckForExistingVote(userId, pieId) {
     }
 
     const existingVote = await ConnectAndQuery(CheckForExistingVoteQuery, new Map([
-        ['userId', userId],
+        ['userId', raw_id],
         ['pieId', pieId]
     ]));
 
@@ -83,7 +89,7 @@ async function UpdateVote(userId, pieId, vote) {
     }
 
     await ConnectAndQuery(UpdateVoteQuery, new Map([
-        ['userId', userId],
+        ['userId', raw_id],
         ['pieId', pieId], 
         ['vote', vote]
     ]));
@@ -104,7 +110,7 @@ async function VoteForPie(pieId, vote, userId) {
     }
 
     await ConnectAndQuery(VoteForPieQuery, new Map([
-        ['userId', userId],
+        ['userId', raw_id],
         ['pieId', pieId], 
         ['vote', vote]
     ]));
@@ -148,21 +154,31 @@ async function UpdateSuperlativeVote(userId, pieId, superlativeId) {
 
 router.post('/bake-pie/:name', async (req, res) => {
     try { 
-        await BakePie(req.params.name, req.body.image);
-        res.send("You chefed up a pie 🥳");
+        raw_id = parseInt(unhashUserId(req.body.userId),10);
+        var pieId = await BakePie(req.params.name, req.body.image, raw_id);
+        console.log(pieId);
+        res.json({ 
+            "pieId": pieId,
+            "userId": raw_id,
+            "pieName": req.params.name
+
+         });
     } catch (err) {
         res.status(500).send(`Pie entry failed: ${err.message}`);
     }
 });
 
-async function BakePie(name, base64ImageData) {
+async function BakePie(name, base64ImageData, userId) {
+    console.log("Raw id: " + userId);
     if (!(typeof name === "string" && name.trim().length > 0 && name.length <= 100)) {
         throw new Error("Invalid pie name: must be a non-empty string within 100 characters.");
     }
-    await ConnectAndQuery(BakePieQuery, new Map([
+    let res = await ConnectAndQuery(BakePieQuery, new Map([
         ['name', name],
-        ['image', base64ImageData ? base64ImageData : null]
+        ['image', base64ImageData ? base64ImageData : null],
+        ['userId', userId]
     ]));
+    return res[0].pieId;
 }
 
 router.post('/add-user', async (req, res) => {
@@ -237,7 +253,7 @@ router.post('/verify-user', async (req, res) => {
                 message: "User is verified 👨🏻‍🍳",
                 username: verificationResultJson.Username, 
                 password: verificationResultJson.Password,
-                userId: verificationResultJson.UserId
+                userId: hashUserId(verificationResultJson.UserId)
             });
         } else {
             res.status(401).send("User verification failed: Invalid credentials.");
@@ -382,5 +398,121 @@ router.get('/superlative-votes/:userId', async (req, res) => {
         res.status(500).send(`Get superlative votes failed: ${err.message}`);
     }
 });
+
+// Fetch all superlatives
+router.get('/superlatives', async (req, res) => {
+    try {
+      const result = await ConnectAndQuery(GetSuperlativesQuery);
+      // log the result for debugging
+      console.log('Superlatives:', result);
+      res.json(result);
+    } catch (err) {
+      res.status(500).send('Error fetching superlatives');
+        console.error(err);
+    }
+  });
+
+// Submit a vote for a pie under a superlative
+// If the user has already voted for this superlative, update their vote
+// If the user has not voted for this superlative, insert a new vote
+router.post('/vote-superlative', async (req, res) => {
+    const { userId, pieId, superlativeId } = req.body;
+    try {
+        const existingVote = await ConnectAndQuery(GetSuperlativeVotesQuery, new Map([
+            ['userId', userId],
+            ['superlativeId', superlativeId]
+        ]));
+
+        if (existingVote && existingVote.length > 0) {
+            await UpdateSuperlativeVote(userId, pieId, superlativeId);
+            res.send("Superlative vote updated successfully.");
+        } else {
+            await InsertSuperlativeVote(userId, pieId, superlativeId);
+            res.send("Superlative vote casted successfully.");
+        }
+    } catch (err) {
+        res.status(500).send(`Superlative vote failed: ${err.message}`);
+    }
+
+});
+
+// Get all superlative votes for a user
+router.get('/superlative-votes/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const votes = await ConnectAndQuery(GetSuperlativeVotesByUserQuery, new Map([
+            ['userId', userId]
+        ]));
+        res.json(votes);
+    } catch (err) {
+        res.status(500).send(`Get superlative votes failed: ${err.message}`);
+    }
+});
+
+router.post('/add-image/:pieId/filename/:filename', async (req, res) => {
+    try { 
+        var pieId = req.params.pieId;
+        var filename = req.params.filename;
+        var blobName = `blob${pieId}.${filename}`;
+        var imageUrl = await generateSasUrl(blobName);
+        const accountName = process.env.STORAGE_ACCOUNT_NAME;
+        const containerName = process.env.STORAGE_CONTAINER_NAME;
+        var storeImageUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}`;
+        await ConnectAndQuery(AddPieImage, new Map([
+            ['pieId', pieId],
+            ['image', storeImageUrl]
+        ]));
+
+        var resp = {
+            message: "Image successfully added 🎨",
+            imageUrl: imageUrl
+        }
+
+        //console.log(resp)
+
+        res.json(resp);
+    } catch (err) {
+        res.status(500).send(`Add image failed: ${err.message}`);
+    }
+})
+
+//function for generating URL extension
+
+//function for generating SAS token 
+
+async function generateSasUrl(blobName) {
+    // TODO: these need to be an env variable
+    const accountName = process.env.STORAGE_ACCOUNT_NAME;
+    const accountKey = process.env.STORAGE_ACCOUNT_KEY; 
+    const credential = new StorageSharedKeyCredential(accountName, accountKey);
+    const containerName = process.env.STORAGE_CONTAINER_NAME;
+    const sasToken = generateBlobSASQueryParameters({
+        containerName,
+        blobName,
+        permissions: BlobSASPermissions.parse("rcw"), 
+        startsOn: new Date(new Date().valueOf() - 3600 * 1000),
+        expiresOn: new Date(new Date().valueOf() + 86400 * 1000), // 24 hours from now
+    }, credential).toString();
+    const sasUrl = `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+
+    return sasUrl;
+}
+
+const hashUserId = (userId) => {
+    const userIdStr = String(userId);
+    const encrypted = CryptoJS.AES.encrypt(userIdStr, process.env.SECRET_KEY).toString();
+    return encodeURIComponent(encrypted);
+  };
+  
+  const unhashUserId = (hashedId) => {
+    try {
+      const decoded = decodeURIComponent(hashedId);
+      const decrypted = CryptoJS.AES.decrypt(decoded, process.env.SECRET_KEY);
+      return decrypted.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+      console.error("Failed to unhash userId:", error);
+      return null;
+    }
+  };
 
 module.exports = router;
