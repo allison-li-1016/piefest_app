@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
     Container, 
     Typography, 
@@ -17,6 +17,27 @@ function Home() {
     const navigate = useNavigate();
     const [showAnimation, setShowAnimation] = useState(false);
     const [donationModalOpen, setDonationModalOpen] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    // Slideshow images
+    const slides = [
+        "/images/slideshow_images/3.jpeg",
+        "/images/slideshow_images/1.jpeg",
+        "/images/slideshow_images/2.jpeg",
+        "/images/slideshow_images/4.jpeg",
+        "/images/slideshow_images/5.jpeg",
+        "/images/slideshow_images/6.jpeg"
+    ];
+
+    // Auto-advance slideshow
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide(prev => (prev + 1) % slides.length);
+        }, 4000);
+        
+        return () => clearInterval(interval);
+    }, []);
+
 
     // Functions to handle modal and animation
     const handleOpenModal = () => {
@@ -67,112 +88,206 @@ function Home() {
 
                 <Paper sx={{ p: 3, mb: 4 }}>
                     <Typography variant="h4" gutterBottom>
-                        About PieFest
+                    Thanks for coming to PieFest 2025!
                     </Typography>
                     <Box 
                         sx={{ 
-                            bgcolor: '#e1eaf8', // Changed from pink (#f8e1e8) to light blue
+                            bgcolor: '#e1eaf8',
                             borderRadius: 2, 
-                            p: 3, 
+                            p: 4, // Increased padding
                             mt: 2,
                             mb: 3,
                             boxShadow: 2,
                             color: '#333333',
                             position: 'relative',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            textAlign: 'center',
+                            minHeight: '450px', // Added minimum height to ensure it's bigger
                         }}
                     >
-                        {/* Optional decorative elements */}
+                        {/* Image slideshow */}
+                        <Box sx={{ 
+                            width: '100%', 
+                            height: '600px', // Increased height from 250px to 350px
+                            position: 'relative',
+                            overflow: 'hidden',
+                            borderRadius: 2,
+                            mb: 4, // Increased bottom margin for better spacing
+                            '& img': {
+                                transition: 'opacity 1s ease-in-out'
+                            }
+                        }}>
+                            {slides.map((slide, index) => (
+                                <Box
+                                    key={index}
+                                    component="img"
+                                    src={slide}
+                                    alt={`PieFest 2025 Memories - ${index + 1}`}
+                                    sx={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        opacity: currentSlide === index ? 1 : 0,
+                                        zIndex: currentSlide === index ? 2 : 1,
+                                    }}
+                                    onError={(e) => {
+                                        e.target.src = "/images/slideshow_images/2.jpeg";
+                                    }}
+                                />
+                            ))}
+                            
+                            {/* Slideshow indicator dots */}
+                            <Box sx={{ 
+                                position: 'absolute', 
+                                bottom: 15, 
+                                left: 0,
+                                width: '100%', 
+                                display: 'flex', 
+                                justifyContent: 'center',
+                                zIndex: 3
+                            }}>
+                                {slides.map((_, index) => (
+                                    <Box
+                                        key={index}
+                                        sx={{
+                                            width: 12,
+                                            height: 12,
+                                            bgcolor: currentSlide === index ? 'white' : 'rgba(255,255,255,0.5)',
+                                            borderRadius: '50%',
+                                            mx: 0.5,
+                                            cursor: 'pointer',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.25)'
+                                        }}
+                                        onClick={() => setCurrentSlide(index)}
+                                    />
+                                ))}
+                            </Box>
+                        </Box>
+                        
+                        {/* Thanks message below slideshow */}
+                        <Typography 
+                            variant="h3" // Increased from h4 to h3 for better visibility
+                            sx={{ 
+                                fontWeight: 'bold', 
+                                color: '#2351a3',
+                                mb: 2
+                            }}
+                        >
+                            We'll see you again next year!
+                        </Typography>
+                        
+                        {/* Post PieFest Activities Section */}
+                        <Box 
+                            sx={{ 
+                                mt: 4,
+                                pt: 3,
+                                borderTop: '1px dashed #95b3e8',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: 2
+                            }}
+                        >
+                            <Typography 
+                                variant="h4"
+                                sx={{ 
+                                    color: '#2351a3',
+                                    mb: 2
+                                }}
+                            >
+                            </Typography>
+                            
+                            <Box sx={{ 
+                                display: 'flex', 
+                                flexDirection: { xs: 'column', sm: 'row' },
+                                gap: 3,
+                                width: '100%',
+                                justifyContent: 'center'
+                            }}>
+    
+                                {/* Survey Section */}
+                                <Paper
+                                    elevation={2}
+                                    sx={{ 
+                                        p: 2, 
+                                        flex: 1, 
+                                        minWidth: { xs: '100%', sm: '200px' }, 
+                                        maxWidth: { sm: '45%' },
+                                        textAlign: 'center',
+                                        bgcolor: 'white',
+                                        borderRadius: 2
+                                    }}
+                                >
+                                    <Box 
+                                        component="img"
+                                        src="/images/survey-icon.png"
+                                        alt="Survey Icon"
+                                        sx={{
+                                            width: 60,
+                                            height: 60,
+                                            mb: 1
+                                        }}
+                                        onError={(e) => {
+                                            e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%232351a3' d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E";
+                                        }}
+                                    />
+                                    <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                        Help Us Improve
+                                    </Typography>
+                                    
+                                    <Typography variant="body1" sx={{ mb: 2 }}>
+                                        Your feedback matters! Help us make next year's PieFest even better.
+                                    </Typography>
+                                    
+                                    <Button 
+                                        variant="contained" 
+                                        color="secondary"
+                                        href="https://docs.google.com/forms/d/e/1FAIpQLSdfp6S9pF7w5lmw3mLB2uKjEZUbF9aGAuATGoXlIkmzQa_5zQ/viewform"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        sx={{ 
+                                            minWidth: '180px',
+                                            fontWeight: 'bold'
+                                        }}
+                                    >
+                                        Fill Out Survey
+                                    </Button>
+                                </Paper>
+                            </Box>
+                        </Box>
+
+                        <Typography 
+                            variant="h4" // Increased from h5 to h4 for better visibility 
+                            sx={{ 
+                                color: '#2351a3'
+                            }}
+                        >
+                        </Typography>
+                        
+                        <Typography 
+                            variant="h5" 
+                            sx={{ 
+                                color: '#2351a3'
+                            }}
+                        >
+                        </Typography>
+                        
+                        {/* Optional decorative element */}
                         <Box 
                             sx={{ 
                                 position: 'absolute', 
-                                top: -20, 
-                                right: -20, 
+                                bottom: -25, 
+                                right: -25, 
                                 fontSize: '7rem', 
                                 opacity: 0.2, 
-                                transform: 'rotate(15deg)',
+                                transform: 'rotate(-15deg)',
                                 pointerEvents: 'none'
                             }}
                         >
                             🥧
-                        </Box>
-
-                        <Typography variant="h4" component="h3" gutterBottom sx={{ fontWeight: 'bold', color: '#2351a3' }}>  {/* Changed from pink (#d23369) to blue */}
-                            Save the Date!
-                        </Typography>
-                        
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
-                                <Box sx={{ mb: 2 }}>
-                                    <Typography variant="overline" component="p" sx={{ fontWeight: 'bold', letterSpacing: 1, color: '#2351a3', display: 'flex', alignItems: 'center' }}> {/* Changed to blue */}
-                                        <Box component="span" sx={{ mr: 1 }}>📅</Box>
-                                        WHEN
-                                    </Typography>
-                                    <Typography variant="h5" component="p" sx={{ fontWeight: 'medium', color: '#2351a3' }}> {/* Changed to blue */}
-                                        Saturday, May 3rd, 2025
-                                    </Typography>
-                                    <Typography variant="h6" component="p" sx={{ color: '#2351a3' }}> {/* Changed to blue */}
-                                        3:00 PM
-                                    </Typography>
-                                </Box>
-                            </Grid>
-                            
-                            <Grid item xs={12} md={6}>
-                                <Box>
-                                    <Typography variant="overline" component="p" sx={{ fontWeight: 'bold', letterSpacing: 1, color: '#2351a3', display: 'flex', alignItems: 'center' }}> {/* Changed to blue */}
-                                        <Box component="span" sx={{ mr: 1 }}>📍</Box>
-                                        WHERE
-                                    </Typography>
-                                    <Typography variant="h5" component="p" sx={{ fontWeight: 'medium', color: '#2351a3' }}> {/* Changed to blue */}
-                                        Rooster Apartments 
-                                    </Typography>
-                                    <Typography 
-                                        variant="body1" 
-                                        component="p" 
-                                        sx={{ 
-                                            fontWeight: 'medium', 
-                                            color: '#2351a3',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            '&:hover': {
-                                                textDecoration: 'underline',
-                                                cursor: 'pointer'
-                                            }
-                                        }}
-                                        onClick={() => window.open('https://maps.google.com/?q=839+NE+66th+Street,+Seattle,+WA', '_blank')}
-                                    > 
-                                        <Box component="span" sx={{ mr: 0.5 }}>🗺️</Box>
-                                        839 NE 66th Street
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, color: '#2351a3' }}> {/* Changed to blue */}
-                                        <Box component="span" sx={{ mr: 0.5, fontWeight: 'bold', color: '#2351a3' }}> {/* Changed to blue */}
-                                            PARKING:
-                                        </Box>
-                                        Greenlake Park & Ride
-                                    </Typography>
-                                </Box>
-                            </Grid>
-                        </Grid>
-                        
-                        <Box sx={{ mt: 2, display: 'flex', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
-                            <Button 
-                                variant="contained" 
-                                sx={{ 
-                                    fontWeight: 'bold',
-                                    px: 3,
-                                    py: 1,
-                                    boxShadow: 3,
-                                    bgcolor: '#ffffff',
-                                    color: '#333333',
-                                    '&:hover': {
-                                        bgcolor: '#f0f0f0',
-                                        boxShadow: 6
-                                    }
-                                }}
-                                onClick={() => window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text=PieFest%202025&dates=20250503T220000Z/20250503T240000Z&details=Join%20us%20for%20PieFest%202025!&location=839%20NE%2066th%20Street,%20Seattle,%20WA', '_blank')}
-                            >
-                                Add to Calendar
-                            </Button>
                         </Box>
                     </Box>
                 </Paper>
