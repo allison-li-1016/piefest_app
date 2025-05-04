@@ -2,7 +2,23 @@ const CryptoJS = require('crypto-js');
 const express = require('express');
 const router = express.Router();
 const { ConnectAndQuery } = require('./sql.js');
-const { AddPieImage, VerifyUserQuery, GetUserQuery, VoteForPieQuery, BakePieQuery, AddUserQuery, GetAllPiesQuery, GetPieQuery, GetVotesQuery, CheckForExistingVoteQuery, UpdateVoteQuery, GetAllVotesForUserQuery } = require('./sqlqueries.js');
+const { 
+    AddPieImage, 
+    VerifyUserQuery,
+    GetUserQuery,
+    VoteForPieQuery,
+    BakePieQuery,
+    AddUserQuery,
+    GetAllPiesQuery,
+    GetPieQuery,
+    GetVotesQuery,
+    CheckForExistingVoteQuery,
+    UpdateVoteQuery,
+    GetAllVotesForUserQuery,
+    GetSuperlativesQuery,
+    GetSuperlativeVotesQuery,
+    GetSuperlativeVotesByUserQuery
+} = require('./sqlqueries.js');
 const { generateBlobSASQueryParameters, BlobSASPermissions, StorageSharedKeyCredential } = require('@azure/storage-blob');
 const {returnPassword} = require('./PasswordGenerator.js');
 
@@ -97,6 +113,42 @@ async function VoteForPie(pieId, vote, userId) {
         ['userId', raw_id],
         ['pieId', pieId], 
         ['vote', vote]
+    ]));
+}
+
+async function InsertSuperlativeVote(userId, pieId, superlativeId) {
+    if (!Number.isInteger(userId)) {
+        throw new Error("Invalid userId: must be an integer.");
+    }
+    if (!Number.isInteger(pieId)) {
+        throw new Error("Invalid pieId: must be an integer.");
+    }
+    if (!Number.isInteger(superlativeId)) {
+        throw new Error("Invalid superlativeId: must be an integer.");
+    }
+
+    await ConnectAndQuery(VoteForPieQuery, new Map([
+        ['userId', userId],
+        ['pieId', pieId], 
+        ['superlativeId', superlativeId]
+    ]));
+}
+
+async function UpdateSuperlativeVote(userId, pieId, superlativeId) {
+    if (!Number.isInteger(userId)) {
+        throw new Error("Invalid userId: must be an integer.");
+    }
+    if (!Number.isInteger(pieId)) {
+        throw new Error("Invalid pieId: must be an integer.");
+    }
+    if (!Number.isInteger(superlativeId)) {
+        throw new Error("Invalid superlativeId: must be an integer.");
+    }
+
+    await ConnectAndQuery(UpdateVoteQuery, new Map([
+        ['userId', userId],
+        ['pieId', pieId], 
+        ['superlativeId', superlativeId]
     ]));
 }
 
@@ -296,6 +348,106 @@ async function GetResults(limit) {
     ]));
     return votes;
 }
+
+// Fetch all superlatives
+router.get('/superlatives', async (req, res) => {
+    try {
+      const result = await ConnectAndQuery(GetSuperlativesQuery);
+      // log the result for debugging
+      console.log('Superlatives:', result);
+      res.json(result);
+    } catch (err) {
+      res.status(500).send('Error fetching superlatives');
+        console.error(err);
+    }
+  });
+
+// Submit a vote for a pie under a superlative
+// If the user has already voted for this superlative, update their vote
+// If the user has not voted for this superlative, insert a new vote
+router.post('/vote-superlative', async (req, res) => {
+    const { userId, pieId, superlativeId } = req.body;
+    try {
+        const existingVote = await ConnectAndQuery(GetSuperlativeVotesQuery, new Map([
+            ['userId', userId],
+            ['superlativeId', superlativeId]
+        ]));
+
+        if (existingVote && existingVote.length > 0) {
+            await UpdateSuperlativeVote(userId, pieId, superlativeId);
+            res.send("Superlative vote updated successfully.");
+        } else {
+            await InsertSuperlativeVote(userId, pieId, superlativeId);
+            res.send("Superlative vote casted successfully.");
+        }
+    } catch (err) {
+        res.status(500).send(`Superlative vote failed: ${err.message}`);
+    }
+
+});
+
+// Get all superlative votes for a user
+router.get('/superlative-votes/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const votes = await ConnectAndQuery(GetSuperlativeVotesByUserQuery, new Map([
+            ['userId', userId]
+        ]));
+        res.json(votes);
+    } catch (err) {
+        res.status(500).send(`Get superlative votes failed: ${err.message}`);
+    }
+});
+
+// Fetch all superlatives
+router.get('/superlatives', async (req, res) => {
+    try {
+      const result = await ConnectAndQuery(GetSuperlativesQuery);
+      // log the result for debugging
+      console.log('Superlatives:', result);
+      res.json(result);
+    } catch (err) {
+      res.status(500).send('Error fetching superlatives');
+        console.error(err);
+    }
+  });
+
+// Submit a vote for a pie under a superlative
+// If the user has already voted for this superlative, update their vote
+// If the user has not voted for this superlative, insert a new vote
+router.post('/vote-superlative', async (req, res) => {
+    const { userId, pieId, superlativeId } = req.body;
+    try {
+        const existingVote = await ConnectAndQuery(GetSuperlativeVotesQuery, new Map([
+            ['userId', userId],
+            ['superlativeId', superlativeId]
+        ]));
+
+        if (existingVote && existingVote.length > 0) {
+            await UpdateSuperlativeVote(userId, pieId, superlativeId);
+            res.send("Superlative vote updated successfully.");
+        } else {
+            await InsertSuperlativeVote(userId, pieId, superlativeId);
+            res.send("Superlative vote casted successfully.");
+        }
+    } catch (err) {
+        res.status(500).send(`Superlative vote failed: ${err.message}`);
+    }
+
+});
+
+// Get all superlative votes for a user
+router.get('/superlative-votes/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const votes = await ConnectAndQuery(GetSuperlativeVotesByUserQuery, new Map([
+            ['userId', userId]
+        ]));
+        res.json(votes);
+    } catch (err) {
+        res.status(500).send(`Get superlative votes failed: ${err.message}`);
+    }
+});
 
 router.post('/add-image/:pieId/filename/:filename', async (req, res) => {
     try { 

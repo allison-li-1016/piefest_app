@@ -3,6 +3,7 @@ import Home from './pages/Home/Home.js';
 import Vote from './pages/Vote.js';
 import Rankings from './pages/Rankings.js';
 import CreatePie from './pages/CreatePie.js';
+import Superlatives from './pages/Superlatives.js';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/vote" element={<Vote />} />
         <Route path="/rankings" element={<Rankings />} />
         <Route path="/create-pie" element={<CreatePie />} />
+        <Route path="/superlatives" element={<Superlatives />} />
       </Routes>
     </BrowserRouter>
   );
