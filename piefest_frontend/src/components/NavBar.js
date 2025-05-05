@@ -35,7 +35,8 @@ function NavBar() {
         { path: '/', label: 'Home' },
         { path: '/vote', label: 'Vote Now' },
         { path: '/rankings', label: 'View Rankings' },
-        { path: '/create-pie', label: 'Submit a Pie' }
+        { path: '/create-pie', label: 'Submit a Pie' },
+        { path: '/supporters', label: 'Supporters' }
     ];
 
     return (
