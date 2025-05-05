@@ -390,6 +390,44 @@ function Home() {
                         </Grid>
 
                     </Grid>
+
+                    <Divider sx={{ my: 3 }} />
+                    
+                    <Typography variant="h5" gutterBottom>
+                        Cleanup Crew
+                    </Typography>
+                    
+                    <Typography variant="body1" paragraph>
+                        PieFest would not be possible without our amazing volunteers who help clean up after the event!
+                    </Typography>
+
+                    <Grid container spacing={3} sx={{ mt: 2 }}>
+                        <Grid item xs={12} sm={6}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                    <Box
+                                                component="img"
+                                                src="/images/james.jpeg" // Path to your image
+                                                alt="James Liu"
+                                                sx={{
+                                                    width: 80,
+                                                    height: 80,
+                                                    mr: 2,
+                                                    borderRadius: '50%',
+                                                    objectFit: 'cover',
+                                                    border: '2px solid',
+                                                    borderColor: 'secondary.main',
+                                                }}
+                                            />
+                                    <Box>
+                                        <Typography variant="h6">James Liu</Typography>
+                                        <Typography variant="body2" color="text.secondary">Absolute Tank</Typography>
+                                    </Box>
+                                </Box>
+                                <Typography variant="body2">
+                                    Favorite Pie: Hotpot Pie 🔥.
+                                </Typography>
+                            </Grid>
+                        </Grid>
                     
                     <Divider sx={{ my: 3 }} />
                     
