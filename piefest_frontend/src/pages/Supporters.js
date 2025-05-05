@@ -36,7 +36,7 @@ function Supporters() {
         { name: "Gill Gill", tier: "Merch Sponsors" },
         { name: "Han Feng", tier: "Monetary Donors" },
         { name: "Kai Bailey", tier: "Monetary Donors" },
-        { name: "Nicco Garafalo", tier: "Public Enemy #1" }
+        { name: "Nicco Garofalo", tier: "Public Enemy #1" }
     ];
 
     const navigate = useNavigate();
