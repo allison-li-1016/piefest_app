@@ -56,34 +56,91 @@ function Rankings() {
 	const [ratings, setRatings] = useState({})
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(false)
+	const [retryCount, setRetryCount] = useState(0)
 
 	// Fetch pies on component mount
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const allPies = await getAllPies();
-				const topResults = await getTopPies()
+	// useEffect(() => {
+	// 	const fetchData = async () => {
+	// 		try {
+	// 			const allPies = await getAllPies();
+	// 			const topResults = await getTopPies()
 
-				const filteredPies = allPies.filter(pie => 
-					topResults.some(topPie => topPie.PieId === pie.id)
-				);
+	// 			const filteredPies = allPies.filter(pie => 
+	// 				topResults.some(topPie => topPie.PieId === pie.id)
+	// 			);
 				
-				setPies(filteredPies);
+	// 			setPies(filteredPies);
 
-				// Initialize ratings object
-				getRankings().then((r) => {
-					setRatings(r)
-					setLoading(false)
-				})
-			} catch (error) {
-				console.error("Error fetching pies:", error)
-				setLoading(false)
-				setError(true)
-			}
-		}
+	// 			// Initialize ratings object
+	// 			getRankings().then((r) => {
+	// 				setRatings(r)
+	// 				setLoading(false)
+	// 			})
+	// 		} catch (error) {
+	// 			console.error("Error fetching pies:", error)
+	// 			setLoading(false)
+	// 			setError(true)
+	// 		}
+	// 	}
 
-		fetchData()
-	}, [])
+	// 	fetchData()
+	// }, [])
+
+	useEffect(() => {
+        const maxRetries = 15;
+        let attempts = 0;
+        
+        const fetchWithRetry = async (retryDelay = 1000) => {
+            try {
+                setLoading(true);
+                setRetryCount(attempts);
+                
+                // Attempt to fetch data
+                const allPies = await getAllPies();
+                const topResults = await getTopPies();
+
+                const filteredPies = allPies.filter(pie => 
+                    topResults.some(topPie => topPie.PieId === pie.id)
+                );
+                
+                setPies(filteredPies);
+
+                // Initialize ratings object
+                const ratings = await getRankings();
+                setRatings(ratings);
+                setLoading(false);
+                
+                // Success, so no need for further retries
+                return;
+                
+            } catch (error) {
+                console.error(`Error fetching pies (attempt ${attempts + 1}/${maxRetries}):`, error);
+                
+                attempts++;
+                
+                // If we've reached the maximum retries, set error state
+                if (attempts >= maxRetries) {
+					console.error("Error fetching pies:", error)
+                    setLoading(false);
+                    setError(true);
+                    return;
+                }
+                
+                // Otherwise, retry with exponential backoff
+                const nextRetryDelay = retryDelay * 2;
+                console.log(`Retrying in ${nextRetryDelay}ms...`);
+                
+                // Set a timeout for the next retry
+                setTimeout(() => {
+                    fetchWithRetry(nextRetryDelay);
+                }, retryDelay);
+            }
+        };
+
+        fetchWithRetry();
+    }, []);
+
+
 
 	// Render the pie cards
 	return (

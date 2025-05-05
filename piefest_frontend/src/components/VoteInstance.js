@@ -15,7 +15,12 @@ import {
 	CircularProgress,
 	Divider,
 	TextField,
-	Rating
+	Rating,
+	Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
@@ -55,34 +60,94 @@ function VoteInstance() {
 	const [pies, setPies] = useState([]);
 	const [ratings, setRatings] = useState({});
 	const [loading, setLoading] = useState(true);
+	const [dialogOpen, setDialogOpen] = useState(false);
+	const [retryCount, setRetryCount] = useState(0);
+    const [error, setError] = useState(false);
 
 	// Fetch pies on component mount
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const allPies = await getAllPies();
-				setPies(allPies);
+	// useEffect(() => {
+	// 	const fetchData = async () => {
+	// 		try {
+	// 			const allPies = await getAllPies();
+	// 			setPies(allPies);
 				
-				const userId = Cookies.get('userId');
-				const votes = await getAllVotesForUser(userId);
+	// 			const userId = Cookies.get('userId');
+	// 			const votes = await getAllVotesForUser(userId);
 				
-				// Initialize ratings object
-				const initialRatings = {};
+	// 			// Initialize ratings object
+	// 			const initialRatings = {};
 				
-				votes.forEach(pie => {
-					initialRatings[pie.PieId] = pie.Vote;
-				});
-				setRatings(initialRatings);
+	// 			votes.forEach(pie => {
+	// 				initialRatings[pie.PieId] = pie.Vote;
+	// 			});
+	// 			setRatings(initialRatings);
 				
-				setLoading(false);
-			} catch (error) {
-				console.error("Error fetching pies:", error);
-				setLoading(false);
-			}
-		};
+	// 			setLoading(false);
+	// 		} catch (error) {
+	// 			console.error("Error fetching pies:", error);
+	// 			setLoading(false);
+	// 		}
+	// 	};
 		
-		fetchData();
-	}, []);
+	// 	fetchData();
+	// }, []);
+
+	useEffect(() => {
+        const maxRetries = 15;
+        let attempts = 0;
+        
+        const fetchWithRetry = async (retryDelay = 1000) => {
+            try {
+                setLoading(true);
+                setRetryCount(attempts);
+                
+                // Attempt to fetch data
+                const allPies = await getAllPies();
+                setPies(allPies);
+                
+                // const userId = Cookies.get('userId');
+                // const votes = await getAllVotesForUser(userId);
+                
+                // Initialize ratings object
+                // const initialRatings = {};
+                
+                // votes.forEach(pie => {
+                //     initialRatings[pie.PieId] = pie.Vote;
+                // });
+                // setRatings(initialRatings);
+                
+                setLoading(false);
+                setError(false);
+                
+                // Success, so no need for further retries
+                return;
+                
+            } catch (error) {
+                console.error(`Error fetching pies (attempt ${attempts + 1}/${maxRetries}):`, error);
+                
+                attempts++;
+                
+                // If we've reached the maximum retries, set error state and use mock data
+                if (attempts >= maxRetries) {
+					console.error("Error fetching pies:", error)
+                    setError(true);
+					setLoading(false);
+                    return;
+                }
+                
+                // Otherwise, retry with exponential backoff
+                const nextRetryDelay = retryDelay * 2;
+                console.log(`Retrying in ${nextRetryDelay}ms...`);
+                
+                // Set a timeout for the next retry
+                setTimeout(() => {
+                    fetchWithRetry(nextRetryDelay);
+                }, retryDelay);
+            }
+        };
+        
+        fetchWithRetry();
+    }, []);
 
 	// Handle rating change
 	const handleRatingChange = (pieId, value) => {
@@ -97,46 +162,38 @@ function VoteInstance() {
 		}
 	};
 
-	// Handle submit function
-	const handleSubmit = async () => {
-		try {
-			const userId = Cookies.get('userId');
-
-			if (!userId) {
-				throw new Error("User ID not found in cookies.");
-			}
-			await updatePieRatings(userId, ratings);
-
-		} catch (error) {
-			console.error("Error submitting ratings:", error);
-			alert('Failed to submit ratings.');
-		}
-	};
-
 	// Render the pie cards
 	const [showAnimation, setShowAnimation] = useState(false);
 
 	// Handle submit function
 	const handleSubmitWithAnimation = async () => {
 		setShowAnimation(true);
-		try {
-			const userId = Cookies.get('userId');
-			if (!userId) {
-				throw new Error("User ID not found in cookies.");
-			}
+		setDialogOpen(true);
+        setTimeout(() => {
+            setShowAnimation(false);
+        }, 2000);
+		// try {
+		// 	const userId = Cookies.get('userId');
+		// 	if (!userId) {
+		// 		throw new Error("User ID not found in cookies.");
+		// 	}
 
-			await updatePieRatings(userId, ratings);
+		// 	await updatePieRatings(userId, ratings);
 
-			setTimeout(() => {
-				setShowAnimation(false);
-			}, 2000);
+		// 	setTimeout(() => {
+		// 		setShowAnimation(false);
+		// 	}, 2000);
 
-		} catch (error) {
-			console.error("Error submitting ratings:", error);
-			alert('Failed to submit ratings.');
-			setShowAnimation(false);
-		}
+		// } catch (error) {
+		// 	console.error("Error submitting ratings:", error);
+		// 	alert('Failed to submit ratings.');
+		// 	setShowAnimation(false);
+		// }
 	};
+
+	const handleCloseDialog = () => {
+        setDialogOpen(false);
+    };
 
 	return (
 		<div>
@@ -276,6 +333,28 @@ function VoteInstance() {
 					</Typography>
 				</Paper>
 			)}
+
+			<Dialog
+                open={dialogOpen}
+                onClose={handleCloseDialog}
+                aria-labelledby="voting-dialog-title"
+                aria-describedby="voting-dialog-description"
+            >
+                <DialogTitle id="voting-dialog-title">
+                    Voting Has Ended
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="voting-dialog-description">
+                        We're sorry, but the voting period for PieFest 2025 has ended.
+                        Please check the rankings page for the final results!
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary" autoFocus>
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
 		</Container>
 		</div>
 	);

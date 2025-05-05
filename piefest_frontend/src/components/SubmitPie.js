@@ -9,7 +9,12 @@ import {
     Typography, 
     Paper,
     Alert,
-    Fade
+    Fade,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -26,80 +31,86 @@ function SubmitPie() {
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
-        setSuccess(false);
-        try {
-            let formData = new FormData();
-            console.log('Submitting pie:', pieName);
-            let bakePieRes = await fetch(`/backend/bake-pie/${pieName}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ userId: Cookies.get('userId')})
-            });
-            if (bakePieRes.status != 200) {
-                setError(`Failed to submit pie with error code ${bakePieRes.status}. Please try again.`);
-                return;
-            }
-            console.log('Pie submitted subcessfully');
-            let bakePieResJson = await bakePieRes.json();
-            console.log(bakePieResJson);
-            if (selectedImage) {
-                // Use Promise to handle the async FileReader operation
-                // const base64Data = await new Promise((resolve, reject) => {
-                //     const reader = new FileReader();
-                //     reader.onload = () => resolve(reader.result.split(',')[1]);
-                //     reader.onerror = reject;
-                //     reader.readAsDataURL(selectedImage);
-                // });
-                console.log("Selected image:", selectedImage);
-                console.log("Adding Image");
-                var url = `/backend/add-image/${bakePieResJson.pieId}/filename/${selectedImage.name}`;
-                console.log(url);
-                let res = await fetch(url, { method: 'POST' } );
-                console.log(res);
-                if (!res.ok) {
-                    setError(`Failed to submit pie image with error code ${res.status}. Please try again.`);
-                    return
-                }
+        setDialogOpen(true);
+        // setError(null);
+        // setSuccess(false);
+        // try {
+        //     let formData = new FormData();
+        //     console.log('Submitting pie:', pieName);
+        //     let bakePieRes = await fetch(`/backend/bake-pie/${pieName}`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({ userId: Cookies.get('userId')})
+        //     });
+        //     if (bakePieRes.status != 200) {
+        //         setError(`Failed to submit pie with error code ${bakePieRes.status}. Please try again.`);
+        //         return;
+        //     }
+        //     console.log('Pie submitted subcessfully');
+        //     let bakePieResJson = await bakePieRes.json();
+        //     console.log(bakePieResJson);
+        //     if (selectedImage) {
+        //         // Use Promise to handle the async FileReader operation
+        //         // const base64Data = await new Promise((resolve, reject) => {
+        //         //     const reader = new FileReader();
+        //         //     reader.onload = () => resolve(reader.result.split(',')[1]);
+        //         //     reader.onerror = reject;
+        //         //     reader.readAsDataURL(selectedImage);
+        //         // });
+        //         console.log("Selected image:", selectedImage);
+        //         console.log("Adding Image");
+        //         var url = `/backend/add-image/${bakePieResJson.pieId}/filename/${selectedImage.name}`;
+        //         console.log(url);
+        //         let res = await fetch(url, { method: 'POST' } );
+        //         console.log(res);
+        //         if (!res.ok) {
+        //             setError(`Failed to submit pie image with error code ${res.status}. Please try again.`);
+        //             return
+        //         }
 
-                console.log("Bacend call successfull")
-                let resJson = await res.json();
-                console.log(resJson);
-                let sasUrl = resJson.imageUrl
-                console.log("SAS URL:", sasUrl);
+        //         console.log("Bacend call successfull")
+        //         let resJson = await res.json();
+        //         console.log(resJson);
+        //         let sasUrl = resJson.imageUrl
+        //         console.log("SAS URL:", sasUrl);
 
-                // Step 3: Upload the image directly to the SAS URL
-                const uploadResponse = await fetch(sasUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'x-ms-blob-type': 'BlockBlob',
-                        'Content-Type': selectedImage.type,
-                    },
-                    body: selectedImage,  // Send the raw file
-                });
+        //         // Step 3: Upload the image directly to the SAS URL
+        //         const uploadResponse = await fetch(sasUrl, {
+        //             method: 'PUT',
+        //             headers: {
+        //                 'x-ms-blob-type': 'BlockBlob',
+        //                 'Content-Type': selectedImage.type,
+        //             },
+        //             body: selectedImage,  // Send the raw file
+        //         });
                 
-                if (!uploadResponse.ok) {
-                    setError(`Failed to upload image with status ${uploadResponse.status}. Please try again.`);
-                    return;
-                }
+        //         if (!uploadResponse.ok) {
+        //             setError(`Failed to upload image with status ${uploadResponse.status}. Please try again.`);
+        //             return;
+        //         }
                 
-                // formData.append('image', base64Data);
+        //         // formData.append('image', base64Data);
                 
-                // Get SAS URL
+        //         // Get SAS URL
 
-                // Upload to SAS URL
-            }
-            setSuccess(true);
+        //         // Upload to SAS URL
+        //     }
+        //     setSuccess(true);
 
 
-        } catch (err) {
-            setError(`Failed to submit pie. Please try again. Error: ${err.message}`);
-        }
+        // } catch (err) {
+        //     setError(`Failed to submit pie. Please try again. Error: ${err.message}`);
+        // }
+    };
+
+    const handleCloseDialog = () => {
+        setDialogOpen(false);
     };
 
     return (
@@ -225,6 +236,28 @@ function SubmitPie() {
                     )}
                 </Box>
             </StyledPaper>
+
+            <Dialog
+                open={dialogOpen}
+                onClose={handleCloseDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    PieFest 2025 Has Ended
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        We're sorry, but the submission period for PieFest 2025 has ended.
+                        Please join us next year for PieFest 2026!
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary" autoFocus>
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
         </div>
     );
